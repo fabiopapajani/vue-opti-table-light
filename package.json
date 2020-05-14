@@ -1,11 +1,24 @@
 {
   "name": "vue-opti-table-light",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.1.1",
+  "description": "VueJS Optimized Datatable",
+  "author": "Fabio Papajani <fabiopapajani1991@gmail.com>",
   "scripts": {
     "serve": "vue-cli-service serve dev/main.js",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "build-bundle": "vue-cli-service build --target lib --name vue-opti-table-light ./src/index.js",
+    "lint": "vue-cli-service lint --fix"
+  },
+  "keywords": [
+    "vue",
+    "vuejs",
+    "table",
+    "datatable",
+    "vue-opti-table"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fabio007/vue-opti-table-light.git"
   },
   "dependencies": {
     "core-js": "^3.6.4",
@@ -14,6 +27,13 @@
     "vue-opti-select": "^1.2.9",
     "vuedraggable": "^2.23.2"
   },
+  "files": [
+    "dist/*",
+    "src/*",
+    "*.json",
+    "*.js"
+  ],
+  "main": "./dist/vue-opti-table-light.common.js",
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",
     "@vue/cli-plugin-eslint": "~4.3.0",
