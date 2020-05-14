@@ -65,5 +65,10 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "bugs": {
+    "url": "https://github.com/Fabio007/vue-opti-table-light/issues"
+  },
+  "homepage": "https://github.com/Fabio007/vue-opti-table-light#readme",
+  "license": "MIT"
 }
