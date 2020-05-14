@@ -21,8 +21,8 @@
     "url": "git+https://github.com/Fabio007/vue-opti-table-light.git"
   },
   "dependencies": {
-    "core-js": "^3.6.4",
     "vue": "^2.6.11",
+    "core-js": "^3.6.4",
     "vue-json-excel": "^0.2.98",
     "vue-opti-select": "^1.2.9",
     "vuedraggable": "^2.23.2"
