@@ -1,7 +1,7 @@
 import items from './items';
 
 export default async function loadPaginatedData(page, limit, sortField, sortDirection, search, searchFields) {
-  let data = [...items];
+  let data = [...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items];
   if (sortField) {
     data.sort((a, b) => {
       let firstSortItem;
@@ -69,6 +69,6 @@ export default async function loadPaginatedData(page, limit, sortField, sortDire
             hasNextPage: (page * limit) + limit < data.length,
           },
       });
-    }, 500);
+    }, 0);
   });
 }

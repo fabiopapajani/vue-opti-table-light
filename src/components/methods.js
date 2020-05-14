@@ -93,13 +93,14 @@ export default {
     }
   },
 
-  $_selectItem(row) {
-    const isSelected = this.localTableModel.selectedRows.find(item => item === row);
-    if (isSelected) {
-      this.localTableModel.selectedRows = this.localTableModel.selectedRows.filter(field => field !== row);
-    } else {
-      this.localTableModel.selectedRows.push(row);
-    }
+  // eslint-disable-next-line no-unused-vars
+  $_selectItem(row, e) {
+    // const isSelected = this.localTableModel.selectedRows.find(item => item === row);
+    // if (isSelected) {
+    //   this.localTableModel.selectedRows = this.localTableModel.selectedRows.filter(field => field !== row);
+    // } else {
+    //   this.localTableModel.selectedRows.push(row);
+    // }
     this.$emit('click', this.localTableModel);
   },
 

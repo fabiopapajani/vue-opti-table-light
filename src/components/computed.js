@@ -19,10 +19,10 @@ export default {
     return this.$c_sortedHeaderFields.filter(field => field.item.searchable).map(field => field.item.key);
   },
   // selected
-  $c_selectedItems() {
-    return this.localTableModel.selectedRows;
-  },
-  $c_areAllItemsSelected() { // $c_areAllItemsSelected
+  // $c_selectedItems() {
+  //   return this.localTableModel.selectedRows;
+  // },
+  $c_areAllItemsSelected() {
     return this.$c_items.length === this.localTableModel.selectedRows.length;
   },
   $c_areAllItemsSelectedOnCurrentPage() {
@@ -100,23 +100,6 @@ export default {
         }
       });
     }
-    // handle filters
-    // this.localHeaderFields.forEach((field) => {
-    //   let content = field.item.key;
-    //   if (field.item.key.includes('.')) {
-    //     content = field.item.key.split('.').reduce((acc, part) => {
-    //       if (acc) {
-    //         return acc[part];
-    //       }
-    //       return undefined;
-    //     }, field);
-    //   }
-    //   if (field.item.filter) {
-    //     if (field.item.filter.type === 'search' && this.filterModels[content] && this.filterModels[content].length) {
-    //       items = items.filter(item => (item[content] || '').toString().toLowerCase().includes(this.filterModels[content].toLowerCase()));
-    //     }
-    //   }
-    // });
     return items;
   },
 
@@ -166,6 +149,7 @@ export default {
 
   $c_shouldSelectRow() {
     const selectedRows = [];
+    // console.log('Exec: c_shouldSelectRow');
     this.$c_itemsCurrentPage.forEach((item) => {
       const result = this.tableModel.selectedRows.find(row => row === item);
       if (result) {

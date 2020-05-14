@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-2">
 
-    <vue-opti-table-next
+    <vue-opti-table-light
       selectable
       v-model="tableModel"
       :name="`table-${tableSelect}`"
@@ -37,7 +37,7 @@
       <template slot="HEADER_email" slot-scope="props" >
         <b-btn size="sm" :pressed.sync="myToggle" variant="outline-info" block>{{props.item.content}}</b-btn>
       </template>
-    </vue-opti-table-next>
+    </vue-opti-table-light>
 
   </div>
 </template>
@@ -46,13 +46,14 @@
 import Vue from 'vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-import BootstrapVue from 'bootstrap-vue';
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import { VueOptiSelect } from 'vue-opti-select';
 import VueOptiTableLight from '../src/index';
 import data from './data';
 import loader from './loader';
 
 Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
 Vue.use(VueOptiTableLight);
 
 export default {

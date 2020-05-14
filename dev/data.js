@@ -34,6 +34,7 @@ export default function () {
           header: { content: () => 'Lastname', style: '' },
           display: false,
           item: {
+            filter: true,
             key: 'name.last',
             content: item => item.name.last,
             sortable: true,

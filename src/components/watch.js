@@ -1,16 +1,4 @@
-// import _ from 'lodash';
-
-export default { // eslint-disable-next-line
-  'models.search': function (value) {
-    if (!this.serverSidePagination) {
-      this.currentPage = 1;
-    }
-  },
-  items() {
-    if (!this.serverSidePagination) {
-      this.$_changePageAction(1);
-    }
-  },
+export default {
   tableRows() {
     this.currentPage = 1;
   },
@@ -36,13 +24,6 @@ export default { // eslint-disable-next-line
       this.localHeaderFields.forEach((col) => {
         if (col.item.filter) this.$set(this.filterFieldsModels, col.item.key, this.columnFilterLocal[col.item.key] || []);
       });
-      // if (window.localStorage.getItem(this.name)) {
-      //   this.localTableModel.displayColumns = JSON.parse(window.localStorage.getItem(this.name)).displayColumns;
-      //   this.localHeaderFields = JSON.parse(window.localStorage.getItem(this.name)).columnsOrder;
-      // } else {
-      //   this.localHeaderFields = this.headerFields;
-      //   this.localTableModel.displayColumns = this.localHeaderFields.filter(field => field.display !== false);
-      // }
       this.$emit('click', this.localTableModel);
     },
     deep: true,

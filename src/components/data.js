@@ -11,12 +11,16 @@ export default function () {
       { content: '100 Rows', value: 100, selected: this.defaultRows === 100 },
       { content: '500 Rows', value: 500, selected: this.defaultRows === 500 },
       { content: '1000 Rows', value: 1000, selected: this.defaultRows === 1000 },
+      // { content: '5000 Rows', value: 5000, selected: this.defaultRows === 5000 },
     ],
     models: { search: '', selectAllCheckbox: false },
     // filterModels: {},
     openDropdowns: {},
     paginationSize: this.defaultRows,
     localTableModel: {},
+    // localTableMap: {
+    //   selectedRows: {}
+    // },
     localHeaderFields: [],
     filterFieldsModels: {},
     tableWidth: 0,

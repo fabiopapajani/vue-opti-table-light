@@ -21,7 +21,7 @@
                         @input="$_submitSearch">
           </b-form-input>
 
-          <b-input-group-button slot="right" v-if="enableColumns && saveSettings">
+          <template v-slot:append v-if="enableColumns && saveSettings">
             <b-dropdown class="columns-dropdown" :no-flip="true" right @hidden="$_saveSettings" :disabled="saveSettingsLoading">
               <template slot="button-content">
                 <span v-if="saveSettingsLoading">Saving  <i class="fa fa-spinner fa-spin" aria-hidden="true"></i></span>
@@ -50,7 +50,7 @@
                 </ul>
               </div>
             </b-dropdown>
-          </b-input-group-button>
+          </template>
         </b-input-group>
       </div>
       <!-- END TOGGLE DISPLAY FIELDS DROPDOWN -->
@@ -61,11 +61,11 @@
     <div class="selectAll" v-if="$c_itemsCurrentPage.length && $c_areAllItemsSelectedOnCurrentPage">
       <span v-if="$c_areAllItemsSelected">
         <span>All {{ $c_items.length }} {{ selectLabel }} selected.</span>
-        <span @click="$_selectAllItemsAction(false)" style="text-decoration: underline; cursor: pointer;">Clear selection</span>
+        <span @click="$_selectAllItemsAction(false)" class="action-text">Clear selection</span>
       </span>
       <span v-else>
         <span>All {{ $c_itemsCurrentPage.length }} {{ selectLabel }} in current page selected.</span>
-        <span @click="$_selectAllItemsAction(true)" style="text-decoration: underline; cursor: pointer;">Select all {{ $c_items.length }} {{ selectLabel }}</span>
+        <span @click="$_selectAllItemsAction(true)" class="action-text">Select all {{ $c_items.length }} {{ selectLabel }}</span>
       </span>
     </div>
     <!-- END SELECT ALL OPTION -->
@@ -74,15 +74,16 @@
       <div style="height: 1px"></div>
     </div>
     <div ref="tableHolder" class="table-holder">
-      <table ref="table" :class="[{'table-hover': hover}, 'table table-striped']">
+      <table ref="table" :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
         <!--ALL CHECKBOX & TABLE HEADERS-->
         <thead>
         <tr>
-          <th v-if="selectable" style="text-align: center;">
-            <b-form-checkbox class="m-2" style="padding: 10px; padding-right: 6px; margin: 0px;"
+          <th class="column-checkbox" v-if="selectable">
+            <input type="checkbox"  :true-value="true" :false-value="false" v-model="models.selectAllCheckbox" @click="$_selectAllItemsCurrentPageAction()" />
+            <!-- <b-form-checkbox class="m-2" style="padding: 10px; padding-right: 6px; margin: 0px;"
                              v-model="models.selectAllCheckbox"
                              @click.prevent.native="$_selectAllItemsCurrentPageAction()">
-            </b-form-checkbox>
+            </b-form-checkbox> -->
           </th>
           <template v-for="(col, i) in $c_sortedHeaderFields">
             <th v-if="$c_shouldDisplayColumn[i]"
@@ -126,11 +127,12 @@
         </thead>
         <tbody>
         <tr v-for="(item, i) in $c_itemsCurrentPage" :key="i">
-          <td v-if="selectable" style="text-align: center;">
-            <b-form-checkbox :checked="$c_shouldSelectRow[i]"
+          <td v-if="selectable" class="column-checkbox">
+            <input type="checkbox"  :true-value="true" :false-value="false" @click="(e) => $_selectItem(item, e)" />
+            <!-- <b-form-checkbox :checked="$c_shouldSelectRow[i]"
                              style="padding: 10px; padding-right: 6px; margin: 0px;"
                              @change="$_selectItem(item)">
-            </b-form-checkbox>
+            </b-form-checkbox> -->
           </td>
           <template v-for="(col, j) in $c_sortedHeaderFields">
             <td :key="j"
@@ -166,11 +168,11 @@
         </tfoot>
       </table>
       <!--0 ITEMS-->
-      <div style="padding: 7px; padding-left: 13px; border-top: 1px solid #e1e6ef;"
+      <div class="table-message table-no-results"
            v-if="!$c_items.length && !(serverSidePagination && loading)">
         No Results.
       </div>
-      <div style="padding: 7px; padding-left: 13px; border-top: 1px solid #e1e6ef;"
+      <div class="table-message table-loading"
            v-if="serverSidePagination && loading">
         Loading...
       </div>
@@ -229,8 +231,8 @@
       <div class="col-md-4 col-sm-12 ml-md-auto">
         <ul class="pagination justify-content-end unselectable">
           <li class="page-item">
-            <a class="page-link d-flex justify-content-center align-items-center" style="font-size: 9px; padding-top: 9px;" @click="$_changePageAction(1)">
-              <span aria-hidden="true" style="margin-right: 2px;margin-top: -2px">&laquo;</span>
+            <a class="page-link d-flex justify-content-center align-items-center" @click="$_changePageAction(1)">
+              <span aria-hidden="true">&laquo;</span>
               <span class="sr-only">Previous</span>
               1</a>
           </li>
@@ -238,9 +240,9 @@
               class="page-item"><a :class="{'btn-bg-color': currentPage === page}" class="page-link"
                                    @click="$_changePageAction(page)">{{ page }}</a></li>
           <li class="page-item">
-            <a class="page-link d-flex justify-content-center align-items-center" style="font-size: 9px; padding-top: 9px;" @click="$_changePageAction($c_pages)">
+            <a class="page-link d-flex justify-content-center align-items-center" @click="$_changePageAction($c_pages)">
               <span>{{ $c_pages }}</span>
-              <span aria-hidden="true" style="margin-left: 2px;margin-top: -2px">&raquo;</span>
+              <span aria-hidden="true">&raquo;</span>
               <span class="sr-only">Next</span>
             </a>
           </li>
@@ -267,7 +269,7 @@ import watch from './watch';
 import FilterInput from './FilterInput';
 
 export default {
-  name: 'vue-opti-table-next',
+  name: 'vue-opti-table-light',
   props,
   computed,
   data,
@@ -284,15 +286,15 @@ export default {
     event: 'click',
   },
   created() {
-    // this.localTableModel = this.tableModel;
-    // if (window.localStorage.getItem(this.name)) {
-    //   this.localTableModel.displayColumns = JSON.parse(window.localStorage.getItem(this.name)).displayColumns;
-    //   this.localHeaderFields = JSON.parse(window.localStorage.getItem(this.name)).columnsOrder;
-    // } else {
-    //   this.localHeaderFields = this.headerFields;
-    //   this.localTableModel.displayColumns = this.localHeaderFields.filter(field => field.display !== false);
-    // }
-    // this.$emit('click', this.localTableModel);
+    // If Client Side Render
+    if (!this.serverSidePagination) {
+      this.$watch('models.search', () => {
+        this.currentPage = 1;
+      });
+      this.$watch('items', () => {
+        this.$_changePageAction(1);
+      });
+    }
   },
   mounted() {
     /* ------------ Fake scroller Bind events -------------*/
@@ -321,272 +323,194 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
+.datatable-wrapper {
+  // Scroller
   .fakeScroller {
     overflow-x: auto;
   }
-
   .table-holder {
     overflow-x: auto;
     border: 1px solid #e1e6ef;
   }
-
-  .table-holder th {
-    padding: 0px !important;
+  // Column Dropdown
+  .columns-dropdown {
+    .dropdown-menu {
+      min-width: 13.5rem;
+      max-height: 400px;
+      overflow-y: scroll;
+      padding: 0;
+      .dropdown-header {
+        color: #151b1e;
+        background-color: #FFF;
+        padding: 5px 10px;
+        label.custom-checkbox {
+          margin-bottom: 0;
+          .custom-control-description {
+            line-height: 20px;
+          }
+        }
+      }
+      label.custom-control {
+        margin-bottom: 0;
+      }
+      label > span.custom-control-description {
+        cursor: move;
+      }
+      .list-group-item {
+        padding: .5rem 1.25rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        cursor: move;
+        // .info {
+        //   .fa-sort {
+        //     visibility: hidden;
+        //   }
+        // }
+        // &:hover {
+        //   .info > .fa-sort {
+        //     visibility: visible;
+        //   }
+        // }
+      }
+    }
   }
+  // Table
+  table {
+    thead {
+      tr > th {
+        border-right: 1px solid #e1e6ef;
+        border-bottom: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        cursor: pointer;
+        border-top: none;
+        vertical-align: middle;
+        &:last-child {
+          border-right: none;
+        }
+        .header {
+          display: table;
+          width: 100%;
+          .sort, .title, .cog {
+            display: table-cell;
+            vertical-align: middle;
+            white-space: nowrap;
+            font-weight: bold;
+          }
+          .sort {
+            width: 10px;
+          }
+          .cog {
+            text-align: right;
+          }
+          .arrow-up {
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 5px solid #e1e1e1;
+          }
 
-  .table-holder > table {
-    margin-bottom: 0px;
+          .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid #e1e1e1;
+          }
+          .arrow-up-active {
+            border-bottom: 5px solid #777;
+          }
+          .arrow-down-active {
+            border-top: 5px solid #777;
+          }
+        }
+      }
+      .column-filter {
+        th {
+          border-top: 1px solid #e1e6ef;
+        }
+      }
+    }
+    
+    tbody {
+      tr > td {
+        vertical-align: middle;
+        border-right: 1px solid #e1e6ef;
+        border-bottom: none;
+        &:last-child {
+          border-right: none;
+        }
+        .field {
+          white-space: nowrap;
+          font-weight: normal;
+        }
+      }
+    }
+    .column-checkbox {
+      text-align: center;
+    }
   }
-
+  // Other
+  .table-message {
+    padding: 7px;
+    padding-left: 13px;
+    border-top: 1px solid #e1e6ef;
+  }
   .selectAll {
     text-align: center;
     background: #eee;
     font-size: 11px;
+    .action-text {
+      text-decoration: underline;
+      cursor: pointer;
+    }
   }
-
   .space {
     height: 14px;
     width: 100%;
   }
-</style>
-
-<style scoped>
-  table {
-    font-size: 12px !important;
-  }
-
-  tr > th {
-    border-right: 1px solid #e1e6ef;
-    border-bottom: none;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    cursor: pointer;
-    border-top: none;
-    vertical-align: middle;
-    padding: 7px !important;
-  }
-
-  tr > th:last-child {
-    border-right: none;
-  }
-
-  tr > th:last-child {
-  }
-
-  .field {
-    white-space: nowrap;
-    font-weight: normal;
-  }
-
-  tr > td {
-    vertical-align: middle;
-    border-right: 1px solid #e1e6ef;
-    border-bottom: none;
-    padding: 2px !important;
-  }
-
-  tr > td:last-child {
-    border-right: none;
-  }
-
-  tr > td:last-child {
-  }
-
-  .unselectable {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-</style>
-
-<style scoped>
-  .header {
-    display: table;
-    width: 100%;
-  }
-
-  .sort, .title, .cog {
-    display: table-cell;
-    vertical-align: middle;
-    white-space: nowrap;
-    font-weight: bold;
-  }
-
-  .sort {
-    width: 10px;
-  }
-
-  .cog {
-    text-align: right;
-  }
-
-  .arrow-up {
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid #e1e1e1;
-  }
-
-  .arrow-down {
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid #e1e1e1;
-  }
-
-  .arrow-up-active {
-    border-bottom: 5px solid #777 !important;
-  }
-
-  .arrow-down-active {
-    border-top: 5px solid #777 !important;
-  }
-</style>
-
-<style scoped>
-  .page-item {
-    width: calc(100% / 7);
-  }
-
-  .page-item > a {
-    height: 33px;
-    line-height: 14px;
-    color: #999;
-    display: block;
-    text-align: center;
-    font-size: 10px;
-  }
-
-  .page-item > a:focus {
-    color: #999;
-    background: transparent;
-  }
-
-  .page-item > a:hover {
-    color: #999;
-    background: #f1f1f1;
-    cursor: pointer;
-  }
-
-  .pagination {
-    margin-bottom: 0px;
-  }
-
-  .dropdown-divider {
-    margin: 0 !important;
-  }
-
-</style>
-
-<style scoped>
-  .filter .search, .filter .search:hover, .filter .search:focus {
-    border: 0px !important;
-    margin: 0px !important;
-  }
-
-  .col-disable-bg {
-    background: #eee !important;
-  }
-
-  .col-filter {
-    padding: 0px !important;
-  }
-
-  .b-dropdown {
-    width: 100% !important;
-    border: 0px !important;
-  }
-
-  .placeholder {
-    width: calc(100% - 10px) !important;
-    display: inline-block;
-    text-align: left;
-    text-align: center;
-  }
-
-  .filter .dropdown button {
-    border: 0px !important;
-  }
-
   .pointer-button {
     cursor: pointer;
   }
-</style>
-
-<style lang="scss">
-  .datatable-wrapper {
-    .columns-dropdown {
-      .dropdown-menu {
-        min-width: 13.5rem;
-        max-height: 400px;
-        overflow-y: scroll;
-        padding: 0;
-        .dropdown-header {
-          color: #151b1e;
-          background-color: #FFF;
-          padding: 5px 10px;
-          label.custom-checkbox {
-            margin-bottom: 0;
-            .custom-control-description {
-              line-height: 20px;
-            }
-          }
+  // Pagination
+  .pagination {
+    margin-bottom: 0px;
+    &.unselectable {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .page-item {
+      width: calc(100% / 7);
+      > a {
+        height: 33px;
+        line-height: 14px;
+        color: #999;
+        display: block;
+        text-align: center;
+        font-size: 10px;
+        &:focus {
+          color: #999;
+          background: transparent;
         }
-        label.custom-control {
-          margin-bottom: 0;
-        }
-        label > span.custom-control-description {
-          cursor: move;
-        }
-        .list-group-item {
-          padding: .5rem 1.25rem;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          cursor: move;
-          // .info {
-          //   .fa-sort {
-          //     visibility: hidden;
-          //   }
-          // }
-          // &:hover {
-          //   .info > .fa-sort {
-          //     visibility: visible;
-          //   }
-          // }
+        &:hover {
+          color: #999;
+          background: #f1f1f1;
+          cursor: pointer;
         }
       }
-    }
-    .column-filter {
-      th {
-        border-top: 1px solid #e1e6ef;
-      }
-    }
-    .active-selection {
-      width: 8px;
-      height: 8px;
-      background: transparent;
-      border-radius: 50%;
-      border: 2px solid white;
-      box-sizing: content-box;
-      box-shadow: 0 0 0 2px #007bff;
-      margin: auto 0
-    }
-    .active-selection.active {
-      background: #007bff;
-    }
-    .badge-pill {
-      margin: auto 0;
     }
   }
+  
+}
 </style>
