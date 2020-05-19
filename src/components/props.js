@@ -8,22 +8,22 @@ export default {
   pages: { type: Number, default: 1 },
   selectLabel: { type: String, default: 'items' },
   searchClass: { type: String, default: '' },
-  sort: { type: Object, default: () => ({ key: '', order: '', field: '' }) },
+  sort: { type: Object, default: () => ({ key: '', order: '', field: '' }) }, // ?
   showSearch: { type: Boolean, default: true },
   showPagination: { type: Boolean, default: true },
   enableExport: { type: Boolean, default: true },
   exportLabel: { type: String, default: 'export' },
   enableColumns: { type: Boolean, default: true },
   enableColumnsLabel: { type: String, default: 'Columns' },
-  defaultRows: { type: Number, default: 10 },
-  tableModel: null,
-  searchValue: { type: String, default: '' },
-  serverSidePagination: { type: Boolean, default: false },
+  defaultRows: { type: Number, default: 10 }, // Not dynamic, need full reload
+  tableModel: null, // v-model
+  // searchValue: { type: String, default: '' },
+  serverSidePagination: { type: Boolean, default: false },  // Not dynamic
   loading: { type: Boolean, default: false },
   saveSettings: { type: [Function, null], default: null },
   totals: { type: Object },
   exportCsvItems: { type: Function, default: () => [] }, // Only Server-Side
   columnFilterEnable: { type: Boolean, default: false },
-  columnFilter: { type: Object, default: () => ({}) },
+  columnFilter: { type: Object, default: () => ({}) }, // .sync
   columnFilterReset: { type: Boolean, default: true },
 };

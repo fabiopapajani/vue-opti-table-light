@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-2">
+  <div class="container mt-2" v-if="!preloader">
 
     <vue-opti-table-light
       selectable
@@ -40,6 +40,7 @@
     </vue-opti-table-light>
 
   </div>
+  <div v-else>Loading...</div>
 </template>
 
 <script>
@@ -85,7 +86,7 @@ export default {
     $_loadData({ page, limit, sortField, sortType, search, searchableFields }) {
       if (this.serverSidePagination) {
         this.loading = true;
-        loader(page, limit, sortField, sortType, search, searchableFields).then((r) => {
+        return loader(page, limit, sortField, sortType, search, searchableFields).then((r) => {
           this.loading = false;
           this.table.items = r.data;
           this.pageSize = limit;
@@ -112,8 +113,10 @@ export default {
       });
     },
   },
-  created() {
-    this.$_loadData({ page: 0, limit: 10 });
+  async created() {
+    this.preloader = true;
+    await this.$_loadData({ page: 0, limit: 10 });
+    this.preloader = false;
   },
 };
 </script>

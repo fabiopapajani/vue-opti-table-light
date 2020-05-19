@@ -24,7 +24,7 @@ export default {
       this.localHeaderFields.forEach((col) => {
         if (col.item.filter) this.$set(this.filterFieldsModels, col.item.key, this.columnFilterLocal[col.item.key] || []);
       });
-      this.$emit('click', this.localTableModel);
+      // this.$emit('click', this.localTableModel);
     },
     deep: true,
   },

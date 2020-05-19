@@ -8,6 +8,7 @@ export default function () {
     items: [],
     pageSize: 10,
     loading: false,
+    preloader: true,
     tableModel: {
       selectedRows: [],
       displayColumns: [],

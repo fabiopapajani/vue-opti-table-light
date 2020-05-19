@@ -57,17 +57,6 @@
     </div>
     <!-- END SHOW SEARCH-->
     <div class="space" v-if="showSearch"></div>
-    <!--SELECT ALL OPTION -->
-    <div class="selectAll" v-if="$c_itemsCurrentPage.length && $c_areAllItemsSelectedOnCurrentPage">
-      <span v-if="$c_areAllItemsSelected">
-        <span>All {{ $c_items.length }} {{ selectLabel }} selected.</span>
-        <span @click="$_selectAllItemsAction(false)" class="action-text">Clear selection</span>
-      </span>
-      <span v-else>
-        <span>All {{ $c_itemsCurrentPage.length }} {{ selectLabel }} in current page selected.</span>
-        <span @click="$_selectAllItemsAction(true)" class="action-text">Select all {{ $c_items.length }} {{ selectLabel }}</span>
-      </span>
-    </div>
     <!-- END SELECT ALL OPTION -->
     <!--TABLE -->
     <div ref="scrollerTop" class="fakeScroller">
@@ -79,7 +68,7 @@
         <thead>
         <tr>
           <th class="column-checkbox" v-if="selectable">
-            <input type="checkbox"  :true-value="true" :false-value="false" v-model="models.selectAllCheckbox" @click="$_selectAllItemsCurrentPageAction()" />
+            <input type="checkbox" :true-value="true" :false-value="false" :value="models.selectAllCheckbox" v-model="models.selectAllCheckbox" @change="$_selectAllItemsAction()" />
             <!-- <b-form-checkbox class="m-2" style="padding: 10px; padding-right: 6px; margin: 0px;"
                              v-model="models.selectAllCheckbox"
                              @click.prevent.native="$_selectAllItemsCurrentPageAction()">
@@ -128,11 +117,7 @@
         <tbody>
         <tr v-for="(item, i) in $c_itemsCurrentPage" :key="i">
           <td v-if="selectable" class="column-checkbox">
-            <input type="checkbox"  :true-value="true" :false-value="false" @click="(e) => $_selectItem(item, e)" />
-            <!-- <b-form-checkbox :checked="$c_shouldSelectRow[i]"
-                             style="padding: 10px; padding-right: 6px; margin: 0px;"
-                             @change="$_selectItem(item)">
-            </b-form-checkbox> -->
+            <input type="checkbox" :true-value="true" :false-value="false" :value="item.$selected" v-model="item.$selected" @change="$_selectItem(item)" />
           </td>
           <template v-for="(col, j) in $c_sortedHeaderFields">
             <td :key="j"
@@ -152,7 +137,7 @@
         </tr>
         </tbody>
         <!--TABLE FOOTER, TOTALS-->
-        <tfoot v-if="$c_showTotal && $c_items.length">
+        <tfoot v-if="$c_showTotal && $c_items.length && $c_totals">
         <tr>
           <td v-if="selectable" class="col-disable-bg"></td>
           <template v-for="(col, i) in $c_sortedHeaderFields">
@@ -267,6 +252,7 @@ import computed from './computed';
 import methods from './methods';
 import watch from './watch';
 import FilterInput from './FilterInput';
+import DataModel from './DataModel';
 
 export default {
   name: 'vue-opti-table-light',
@@ -286,8 +272,30 @@ export default {
     event: 'click',
   },
   created() {
+    // Create Data Model
+    this.$watch('items', (items) => { // Create Data Model on items change
+      console.log('%cChange Items', 'color: #007bff;');
+      this.localTableModel.selectedRows = [];
+      this.$set(this, 'dataModel', new DataModel({items}));
+      this.$emit('click', this.localTableModel);
+    }, { immediate: true });
+    this.$watch('dataModel', () => { // Log Data Model Changes
+      console.log('%cChange DataModel', 'color: #fd7e14;');
+    });
+    
     // If Client Side Render
     if (!this.serverSidePagination) {
+      // Apply Order & Search Filter
+      this.$watch(() => {
+        return {
+          order: { key: this.sortField, order: this.sortOrder },
+          search: { value: this.models.search, fields: this.$c_searchableFields },
+          headerFields: this.$c_sortedHeaderFields
+        };
+      }, ({ order, search, headerFields }) => {
+        console.log('Apply Filter')
+        this.dataModel.applyFilter(order, search, headerFields);
+      }, { deep: true, immediate: true });
       this.$watch('models.search', () => {
         this.currentPage = 1;
       });
@@ -463,15 +471,15 @@ export default {
     padding-left: 13px;
     border-top: 1px solid #e1e6ef;
   }
-  .selectAll {
-    text-align: center;
-    background: #eee;
-    font-size: 11px;
-    .action-text {
-      text-decoration: underline;
-      cursor: pointer;
-    }
-  }
+  // .selectAll {
+  //   text-align: center;
+  //   background: #eee;
+  //   font-size: 11px;
+  //   .action-text {
+  //     text-decoration: underline;
+  //     cursor: pointer;
+  //   }
+  // }
   .space {
     height: 14px;
     width: 100%;
