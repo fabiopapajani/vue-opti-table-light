@@ -23,13 +23,13 @@ export default function () {
             content: item => item.name.first,
             sortable: true,
             searchable: true,
-            style: { textAlign: 'center' },
             total: {
               parse: () => 1,
               content: totals => totals['name.first'],
               style: { background: '#fffdf5', fontWeight: 'bold', textAlign: 'center' },
             },
           },
+          colStyle: 'width: 150px;'
         },
         {
           header: { content: () => 'Lastname', style: '' },
@@ -206,6 +206,11 @@ export default function () {
         },
       ],
       items,
+      totals: {
+        'name.first': 40,
+        balance: 250,
+        age: 36
+      },
       options: {
         pagination: false,
       },
@@ -213,5 +218,6 @@ export default function () {
     myToggle: false,
     tableSelect: 'table1',
     columnFilter: {},
+    sticky: true,
   };
 }

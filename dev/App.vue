@@ -19,10 +19,12 @@
       :page="currentPage"
       :header-fields="$c_tableFields"
       :items="table.items"
+      :totals="table.totals"
       :exportCsvItems="$_csvFetchData"
       :column-filter-enable="true"
       :column-filter.sync="columnFilter"
-      :column-filter-reset="false">
+      :column-filter-reset="false"
+      :sticky="sticky">
       <template slot="search">
         <vue-opti-select
           :list="[ { value: 'table1', content: 'Table 1' }, { value: 'table2', content: 'Table 2' } ]"

@@ -80,6 +80,9 @@ export default {
     });
     return sortedCols;
   },
+  $c_headerFields () {
+    return this.$c_sortedHeaderFields.filter((item, index) => this.$c_shouldDisplayColumn[index]);
+  },
   $c_exportTable() {
     const table = {};
     this.$c_sortedHeaderFields.forEach((field) => {

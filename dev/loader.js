@@ -69,6 +69,6 @@ export default async function loadPaginatedData(page, limit, sortField, sortDire
             hasNextPage: (page * limit) + limit < data.length,
           },
       });
-    }, 0);
+    }, 800);
   });
 }

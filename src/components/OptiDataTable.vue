@@ -1,5 +1,5 @@
 <template>
-  <div class="datatable-wrapper">
+  <div :class="`datatable-wrapper-${sticky ? 'sticky' : 'no-sticky'} datatable-wrapper`">
     <!--TOP SLOT-->
     <div class="row" v-if="$slots['top']">
       <slot name="top"></slot>
@@ -11,14 +11,15 @@
       <slot name="search"></slot>
 
       <!-- TOGGLE DISPLAY FIELDS DROPDOWN -->
-      <div class="col-xl-4 col-md-5 col-sm-12 ml-md-auto" :class="searchClass">
+      <div class="col-xl-4 col-md-5 col-sm-12 ml-md-auto datatable-search-wrapper" :class="searchClass">
 
         <b-input-group>
           <b-form-input v-model="models.search"
                         placeholder="Search..."
                         @focus.native="$event.target.select()"
                         @keydown.enter.native="$_submitSearchOnEnter"
-                        @input="$_submitSearch">
+                        @input="$_submitSearch"
+                        class="datatable-search-field">
           </b-form-input>
 
           <template v-slot:append v-if="enableColumns && saveSettings">
@@ -59,25 +60,19 @@
     <div class="space" v-if="showSearch"></div>
     <!-- END SELECT ALL OPTION -->
     <!--TABLE -->
-    <div ref="scrollerTop" class="fakeScroller">
-      <div style="height: 1px"></div>
-    </div>
-    <div ref="tableHolder" class="table-holder">
-      <table ref="table" :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
-        <!--ALL CHECKBOX & TABLE HEADERS-->
+    <div ref="stickyHeader" class="stickyHeader">
+      <table v-if="sticky" ref="table" :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
+
+        <!-- SYNC FIXED COLUMNS -->
+        <col-group-table :selectable="selectable" :headerFields="$c_headerFields" />
+
+        <!-- ALL CHECKBOX & TABLE HEADERS-->
         <thead>
-        <tr>
-          <th class="column-checkbox" v-if="selectable">
-            <input type="checkbox" :true-value="true" :false-value="false" :value="models.selectAllCheckbox" v-model="models.selectAllCheckbox" @change="$_selectAllItemsAction()" />
-            <!-- <b-form-checkbox class="m-2" style="padding: 10px; padding-right: 6px; margin: 0px;"
-                             v-model="models.selectAllCheckbox"
-                             @click.prevent.native="$_selectAllItemsCurrentPageAction()">
-            </b-form-checkbox> -->
-          </th>
-          <template v-for="(col, i) in $c_sortedHeaderFields">
-            <th v-if="$c_shouldDisplayColumn[i]"
-                :key="i"
-                :style="col.header.style || ''">
+          <tr>
+            <th class="column-checkbox" v-if="selectable">
+              <input type="checkbox" :true-value="true" :false-value="false" :value="models.selectAllCheckbox" v-model="models.selectAllCheckbox" @change="$_selectAllItemsAction()" />
+            </th>
+            <th v-for="(col, i) in $c_headerFields" :key="i" :style="col.header.style || ''">
               <div class="header">
                 <div v-if="col.item.sortable" class="sort p-2" @click="$_fieldClickAction(col)">
                   <div :class="{'arrow-up-active': sortKey === col.item.key && sortOrder === 'asc'}"
@@ -101,18 +96,63 @@
                 <!--DROPDOWN FILTERS-->
               </div>
             </th>
-          </template>
-        </tr>
-        <tr v-if="columnFilterEnable" class="column-filter">
-          <th v-if="selectable"></th>
-          <template v-for="(col, i) in $c_sortedHeaderFields">
-            <th v-if="$c_shouldDisplayColumn[i]" :key="i">
+          </tr>
+          <tr v-if="columnFilterEnable" class="column-filter">
+            <th v-if="selectable"></th>
+            <th v-for="(col, i) in $c_headerFields" :key="i">
               <template v-if="filterFieldsModels[col.item.key]">
                 <filter-input v-model="filterFieldsModels[col.item.key]" @input="(payload) => $_onChangeColumnFilter(col.item.key, payload)" />
               </template>
             </th>
-          </template>
-        </tr>
+          </tr>
+        </thead>
+      </table>
+      <div v-else style="height: 1px"></div>
+    </div>
+    <div ref="tableWraper" class="table-holder">
+      <table ref="table" :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
+        <!-- SYNC FIXED COLUMNS -->
+        <col-group-table v-if="sticky" :selectable="selectable" :headerFields="$c_headerFields" />
+
+        <!--ALL CHECKBOX & TABLE HEADERS-->
+        <thead  v-else>
+          <tr>
+            <th class="column-checkbox" v-if="selectable">
+              <input type="checkbox" :true-value="true" :false-value="false" :value="models.selectAllCheckbox" v-model="models.selectAllCheckbox" @change="$_selectAllItemsAction()" />
+            </th>
+            <th v-for="(col, i) in $c_headerFields" :key="i" :style="col.header.style || ''">
+                <div class="header">
+                  <div v-if="col.item.sortable" class="sort p-2" @click="$_fieldClickAction(col)">
+                    <div :class="{'arrow-up-active': sortKey === col.item.key && sortOrder === 'asc'}"
+                        class="arrow-up"></div>
+                    <div style="height: 5px;"></div>
+                    <div :class="{'arrow-down-active': sortKey === col.item.key && sortOrder === 'desc'}"
+                        class="arrow-down"></div>
+                  </div>
+                  <div @click="col.header.preventSort ? null : $_fieldClickAction(col)" class="title pt-2 pb-2"
+                      :class="{ 'pl-2': !col.item.sortable, 'pr-2': !col.item.filter }" style="text-align: center;">
+                    <!-- CHECK IF IS A SLOT -->
+                    <div v-if="col.header.slot" :class="[col.header.class, 'HEADER_field']">
+                      <slot :name="`HEADER_${col.header.slot}`" :item="col.header" :i="i"></slot>
+                    </div>
+                    <span v-else-if="typeof col.header.content == 'function'" v-html="col.header.content()"></span>
+                    <span v-else-if="typeof col.header.content != 'function'" v-html="col.header.content"></span>
+                    <i v-if="col.header.info"
+                      v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window' }"
+                      class="fa fa-info-circle info-icon"></i>
+                  </div>
+                  <!--DROPDOWN FILTERS-->
+                </div>
+              </th>
+          </tr>
+          <tr v-if="columnFilterEnable" class="column-filter">
+            <th v-if="selectable"></th>
+            <th v-for="(col, i) in $c_headerFields" :key="i">
+              <template v-if="filterFieldsModels[col.item.key]">
+                <filter-input v-model="filterFieldsModels[col.item.key]" @input="(payload) => $_onChangeColumnFilter(col.item.key, payload)" />
+              </template>
+            </th>
+          </tr>
         </thead>
         <tbody>
         <tr v-for="(item, i) in $c_itemsCurrentPage" :key="i">
@@ -136,21 +176,21 @@
           </template>
         </tr>
         </tbody>
-        <!--TABLE FOOTER, TOTALS-->
-        <tfoot v-if="$c_showTotal && $c_items.length && $c_totals">
-        <tr>
-          <td v-if="selectable" class="col-disable-bg"></td>
-          <template v-for="(col, i) in $c_sortedHeaderFields">
-            <td :key="i" v-if="$c_shouldDisplayColumn[i]"
-              :style="(col.item.total && col.item.total.style) || col.item.style || ''"
-              :class="{'col-disable-bg': !col.item.total}">
-            <template v-if="col.item.total">
-              <div v-html="col.item.total.content($c_totals)"></div>
-            </template>
-          </td>
-          </template>
-        </tr>
-        </tfoot>
+        <template v-if="!sticky">
+          <!--TABLE FOOTER, TOTALS-->
+          <tfoot v-if="$c_showTotal && $c_items.length && $c_totals">
+            <tr>
+              <td v-if="selectable" class="col-disable-bg"></td>
+                <td v-for="(col, i) in $c_headerFields" :key="i" 
+                  :style="(col.item.total && col.item.total.style) || col.item.style || ''"
+                  :class="{'col-disable-bg': !col.item.total}">
+                <template v-if="col.item.total">
+                  <div v-html="col.item.total.content($c_totals)"></div>
+                </template>
+              </td>
+            </tr>
+          </tfoot>
+        </template>
       </table>
       <!--0 ITEMS-->
       <div class="table-message table-no-results"
@@ -162,6 +202,29 @@
         Loading...
       </div>
     </div>
+
+    <div v-if="sticky" ref="stickyFooter" class="stickyFooter">
+      <table ref="table" :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
+
+        <!-- SYNC FIXED COLUMNS -->
+        <col-group-table :selectable="selectable" :headerFields="$c_headerFields" />
+
+        <!--TABLE FOOTER, TOTALS-->
+        <tfoot v-if="$c_showTotal && $c_items.length && $c_totals">
+          <tr>
+            <td v-if="selectable" class="col-disable-bg"></td>
+              <td v-for="(col, i) in $c_headerFields" :key="i" 
+                :style="(col.item.total && col.item.total.style) || col.item.style || ''"
+                :class="{'col-disable-bg': !col.item.total}">
+              <template v-if="col.item.total">
+                <div v-html="col.item.total.content($c_totals)"></div>
+              </template>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
     <!--PAGINATION-->
     <div class="space" v-if="showPagination"></div>
 
@@ -253,6 +316,7 @@ import methods from './methods';
 import watch from './watch';
 import FilterInput from './FilterInput';
 import DataModel from './DataModel';
+import ColGroupTable from './ColGroupTable';
 
 export default {
   name: 'vue-opti-table-light',
@@ -266,6 +330,7 @@ export default {
     VueOptiSelect,
     draggable,
     FilterInput,
+    ColGroupTable,
   },
   model: {
     prop: 'tableModel',
@@ -274,14 +339,14 @@ export default {
   created() {
     // Create Data Model
     this.$watch('items', (items) => { // Create Data Model on items change
-      console.log('%cChange Items', 'color: #007bff;');
+      // console.log('%cChange Items', 'color: #007bff;');
       this.localTableModel.selectedRows = [];
       this.$set(this, 'dataModel', new DataModel({items}));
       this.$emit('click', this.localTableModel);
     }, { immediate: true });
-    this.$watch('dataModel', () => { // Log Data Model Changes
-      console.log('%cChange DataModel', 'color: #fd7e14;');
-    });
+    // this.$watch('dataModel', () => { // Log Data Model Changes
+    //   console.log('%cChange DataModel', 'color: #fd7e14;');
+    // });
     
     // If Client Side Render
     if (!this.serverSidePagination) {
@@ -293,7 +358,7 @@ export default {
           headerFields: this.$c_sortedHeaderFields
         };
       }, ({ order, search, headerFields }) => {
-        console.log('Apply Filter')
+        // console.log('Apply Filter')
         this.dataModel.applyFilter(order, search, headerFields);
       }, { deep: true, immediate: true });
       this.$watch('models.search', () => {
@@ -306,26 +371,40 @@ export default {
   },
   mounted() {
     /* ------------ Fake scroller Bind events -------------*/
-    const scrollerTop = this.$refs.scrollerTop;
-    const tableHolder = this.$refs.tableHolder;
+    const tableTop = this.$refs.stickyHeader;
+    const tableTopChild = tableTop.childNodes[0];
+
+    const tableWraper = this.$refs.tableWraper;
     const table = this.$refs.table;
-    const scrollerTopChild = scrollerTop.childNodes[0];
+    
+    const tableBottom = this.$refs.stickyFooter;
+
     let areScrolling = 0;
     const onScrollFn = (from, to) => {
       if (areScrolling) return;
       areScrolling = 1;
-      to.scrollLeft = from.scrollLeft;
+      to.forEach(el => { el.scrollLeft = from.scrollLeft; });
       areScrolling = 0;
     };
-    scrollerTop.onscroll = () => onScrollFn(scrollerTop, tableHolder);
-    tableHolder.onscroll = () => onScrollFn(tableHolder, scrollerTop);
-    // Observator
-    const scrollObserver = new ResizeObserver(() => {
-      scrollerTop.style.width = getComputedStyle(tableHolder).width;
-      scrollerTopChild.style.width = getComputedStyle(table).width;
-    });
-    scrollObserver.observe(tableHolder);
-    scrollObserver.observe(table);
+
+    if (this.sticky) {
+      tableBottom.onscroll = () => onScrollFn(tableBottom, [tableTop, tableWraper]);
+      const scrollObserver = new ResizeObserver(() => {
+        tableTop.style.width = getComputedStyle(tableWraper).width;
+        tableBottom.style.width = getComputedStyle(tableWraper).width;
+      });
+      scrollObserver.observe(tableWraper);
+      scrollObserver.observe(table);
+    } else {
+      tableTop.onscroll = () => onScrollFn(tableTop, [tableWraper]);
+      tableWraper.onscroll = () => onScrollFn(tableWraper, [tableTop]);
+      const scrollObserver = new ResizeObserver(() => {
+        tableTop.style.width = getComputedStyle(tableWraper).width;
+        tableTopChild.style.width = getComputedStyle(table).width;
+      });
+      scrollObserver.observe(tableWraper);
+      scrollObserver.observe(table);
+    }
     /* ------------ ------------------------- -------------*/
   },
 };
@@ -333,13 +412,51 @@ export default {
 
 <style lang="scss">
 .datatable-wrapper {
-  // Scroller
-  .fakeScroller {
-    overflow-x: auto;
+  &.datatable-wrapper-sticky {
+    table {
+      table-layout: fixed;
+      .col-size-sync {
+        width: 100px;
+        &.col-size-sync-x {
+          width: 25px;
+        }
+      }
+    }
+    .stickyHeader {
+      overflow-x: hidden;
+      border: 1px solid #e1e6ef;
+      border-bottom: 0;
+      position: sticky;
+      top: 0;
+      background-color: #fff;
+    }
+    .stickyFooter {
+      overflow-x: auto;
+      border: 1px solid #e1e6ef;
+      border-top: 0;
+      position: sticky;
+      bottom: 0;
+      background-color: #fff;
+    }
   }
+
+  &.datatable-wrapper-no-sticky {
+    // Scroller
+    .stickyHeader {
+      overflow-x: auto;
+      transform: rotateX(180deg);
+      border: 1px solid #e1e6ef;
+      border-top: 0;
+    }
+    .table-holder {
+      overflow-x: auto;
+    }
+  }
+  
   .table-holder {
-    overflow-x: auto;
+    overflow-x: hidden;
     border: 1px solid #e1e6ef;
+    border-top: 0;
   }
   // Column Dropdown
   .columns-dropdown {
@@ -399,6 +516,7 @@ export default {
         cursor: pointer;
         border-top: none;
         vertical-align: middle;
+        overflow: hidden;
         &:last-child {
           border-right: none;
         }
@@ -452,6 +570,7 @@ export default {
         vertical-align: middle;
         border-right: 1px solid #e1e6ef;
         border-bottom: none;
+        overflow: hidden;
         &:last-child {
           border-right: none;
         }
@@ -471,15 +590,6 @@ export default {
     padding-left: 13px;
     border-top: 1px solid #e1e6ef;
   }
-  // .selectAll {
-  //   text-align: center;
-  //   background: #eee;
-  //   font-size: 11px;
-  //   .action-text {
-  //     text-decoration: underline;
-  //     cursor: pointer;
-  //   }
-  // }
   .space {
     height: 14px;
     width: 100%;
