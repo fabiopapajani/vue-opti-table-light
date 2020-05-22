@@ -4,9 +4,9 @@
     <div class="row" v-if="$slots['top']">
       <slot name="top"></slot>
     </div>
-    <div class="space" v-if="$slots['top']"></div>
+    <div class="slot-top" v-if="$slots['top']"></div>
     <!-- SHOW SEARCH -->
-    <div class="row" v-if="showSearch">
+    <div class="row header" v-if="showSearch">
       <!-- SEARCH SLOT -->
       <slot name="search"></slot>
 
@@ -56,8 +56,6 @@
       </div>
       <!-- END TOGGLE DISPLAY FIELDS DROPDOWN -->
     </div>
-    <!-- END SHOW SEARCH-->
-    <div class="space" v-if="showSearch"></div>
     <!-- END SELECT ALL OPTION -->
     <!--TABLE -->
     <div ref="stickyHeader" class="stickyHeader">
@@ -225,17 +223,14 @@
       </table>
     </div>
 
-    <!--PAGINATION-->
-    <div class="space" v-if="showPagination"></div>
-
-    <div class="row" v-if="showPagination">
+    <div class="row footer" v-if="showPagination">
       <vue-opti-select class="col-md-2 col-sm-12" v-model="paginationSize" :list="rows"
                        @click="$_pageSizeChanged()">
       </vue-opti-select>
       <div class="col-md-auto" v-if="enableExport">
         <template v-if="serverSidePagination">
           <download-excel
-            class="btn btn-secondary pointer-button"
+            class="btn btn-secondary pointer-button btn-export-csv"
             :fields="$c_exportTable"
             type="csv"
             :name="`${exportLabel}.csv`"
@@ -246,7 +241,7 @@
             <span v-else>Download CSV</span>
           </download-excel>
           <download-excel
-            class="btn btn-secondary pointer-button ml-3"
+            class="btn btn-secondary pointer-button btn-export-xls ml-3"
             :fields="$c_exportTable"
             type="xls"
             :name="`${exportLabel}.xls`"
@@ -298,7 +293,7 @@
       </div>
     </div>
     <!--BOTTOM SLOT-->
-    <div class="space" v-if="$slots['bottom']"></div>
+    <div class="slot-bottom" v-if="$slots['bottom']"></div>
     <div class="row" v-if="$slots['bottom']">
       <slot name="bottom"></slot>
     </div>
@@ -589,10 +584,6 @@ export default {
     padding: 7px;
     padding-left: 13px;
     border-top: 1px solid #e1e6ef;
-  }
-  .space {
-    height: 14px;
-    width: 100%;
   }
   .pointer-button {
     cursor: pointer;
