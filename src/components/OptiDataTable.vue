@@ -197,7 +197,7 @@
     </div>
 
     <div class="row footer" v-if="showPagination">
-      <vue-opti-select-light ref="paginationSizeDropdown" class="col-md-2 col-sm-12" v-model="paginationSize" :options="rows" @change="$_pageSizeChanged" :default="[this.defaultRows]">
+      <vue-opti-select-light ref="paginationSizeDropdown" class="col-md-2 col-sm-12 optimizer-select" v-model="paginationSize" :options="rows" @change="$_pageSizeChanged" :default="[this.defaultRows]">
 
       </vue-opti-select-light>
       <div class="col-md-auto" v-if="enableExport">
