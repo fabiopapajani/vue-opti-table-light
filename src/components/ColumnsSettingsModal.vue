@@ -1,10 +1,15 @@
 <template>
-  <b-modal modal-class="columns-settings-modal" title-class="ml-auto" v-model="modal" @ok="$_saveSettings" @hidden="$_loadFromModel" size="xl" title="Columns settings" body-class="py-0">
+  <b-modal modal-class="columns-settings-modal" title-class="ml-auto" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" size="lg" title="Columns settings" body-class="py-0">
     <div class="row">
       <div class="col-6 py-3 items-col items-col-visibility">
-        <h6 class="font-weight-bold bm-3">Columns visibility</h6>
+        <div class="row mb-1">
+          <h6 class="col font-weight-bold">Columns visibility</h6>
+          <div class="col pl-0">
+            <input class="col" type="search" placeholder="Search..." v-model="searchModel" />
+          </div> 
+        </div>
         <b-list-group>
-          <b-list-group-item class="p-0" v-for="(col, index) in displayModel" :key="index">
+          <b-list-group-item class="p-0" v-for="(col, index) in displayModel" v-show="$c_searchResultIndex === null || $c_searchResultIndex[index]" :key="index">
             <label role="colitem" class="w-100 m-0 py-1 px-2">
               <input type="checkbox" :true-value="true" :false-value="false" v-model="col.display" />
               {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
@@ -17,7 +22,9 @@
         </b-list-group>
       </div>
       <div class="col-6 py-3 items-col items-col-order">
-        <h6 class="font-weight-bold bm-3">Columns order</h6>
+        <div class="row mb-1">
+          <h6 class="col font-weight-bold">Columns order</h6>
+        </div>
         <b-list-group>
           <draggable v-model="model" @start="drag = true" @end="drag = false" v-bind="{ animation: 200, group: 'description', disabled: false, ghostClass: 'ghost' }">
             <transition-group type="transition" :name="!drag ? 'flip-list' : null">
@@ -66,6 +73,7 @@ export default {
       drag: false,
       model: [],
       displayModel: [],
+      searchModel: '',
     }
   },
   created () {
@@ -85,6 +93,16 @@ export default {
 
   },
   computed: {
+    $c_searchResultIndex() {
+      if (this.searchModel) {
+        const searchValue = this.searchModel.trim().toLowerCase();
+        return this.displayModel.map(({ header: { content } }) => {
+          const value = typeof content === 'function' ? `${content()}` : `${content}`
+          return value.toLowerCase().includes(searchValue)
+        })
+      }
+      return null;
+    },
     $c_headersMap() {
       const map = {};
       this.displayModel.forEach((headerItem) => { map[headerItem.item.key] = headerItem; });
@@ -105,6 +123,7 @@ export default {
     $_loadFromModel () {
       this.displayModel = this.value.map(item => Object.assign({}, item))
       this.model = [...this.displayModel];
+      this.searchModel = '';
     }
   }
 }
