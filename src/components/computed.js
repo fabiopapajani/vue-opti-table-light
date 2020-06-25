@@ -1,19 +1,26 @@
 export default {
   // total
   $c_showTotal() {
-    return !!this.$c_sortedHeaderFields.find(field => !!field.item.total);
+    return !!this.$c_headerFields.find(field => !!field.item.total);
   },
   $c_showFilters() {
-    return !!this.$c_sortedHeaderFields.find(field => !!field.item.filter);
+    return !!this.$c_headerFields.find(field => !!field.item.filter);
   },
   $c_totals() {
     if (this.totals) return this.totals;
     if (!this.serverSidePagination) return this.dataModel.output.totals;
     return null;
   },
+  $c_paginationSize() {
+    try {
+      return this.paginationSize[0].value
+    } catch (err) {
+      return this.defaultRows
+    }
+  },
   // search
   $c_searchableFields() {
-    return this.$c_sortedHeaderFields.filter(field => field.item.searchable).map(field => field.item.key);
+    return this.$c_headerFields.filter(field => field.item.searchable).map(field => field.item.key);
   },
   $c_itemsCurrentPage() {
     if (this.serverSidePagination) {
@@ -22,8 +29,8 @@ export default {
     if (!this.$c_pagesInPagination) {
       return this.$c_items;
     }
-    const start = (this.currentPage - 1) * this.paginationSize;
-    const end = (start - 1) + this.paginationSize;
+    const start = (this.currentPage - 1) * this.$c_paginationSize;
+    const end = (start - 1) + this.$c_paginationSize;
     return this.$c_items.filter((item, i) => i >= start && i <= end);
   },
   $c_items () {
@@ -34,7 +41,7 @@ export default {
     if (this.serverSidePagination) {
       return this.pages;
     }
-    return Math.floor(this.$c_items.length / this.paginationSize) + (this.$c_items.length % this.paginationSize && 1) || 1;
+    return Math.floor(this.$c_items.length / this.$c_paginationSize) + (this.$c_items.length % this.$c_paginationSize && 1) || 1;
   },
   $c_pagesInPagination() {
     const itemsNr = 5;
@@ -58,34 +65,12 @@ export default {
     }
     return pages;
   },
-  $c_shouldDisplayColumn() {
-    const displayCols = [];
-    this.localHeaderFields.forEach((header) => {
-      const result = this.tableModel.displayColumns.find(column => column.item.key === header.item.key);
-      if (result) {
-        displayCols.push(true);
-      } else {
-        displayCols.push(false);
-      }
-    });
-    return displayCols;
-  },
-  $c_sortedHeaderFields() {
-    const sortedCols = [];
-    this.localHeaderFields.forEach((header) => {
-      const result = this.headerFields.find(column => column.item.key === header.item.key);
-      if (result) {
-        sortedCols.push(result);
-      }
-    });
-    return sortedCols;
-  },
   $c_headerFields () {
-    return this.$c_sortedHeaderFields.filter((item, index) => this.$c_shouldDisplayColumn[index]);
+    return this.localHeaderFields.filter(({ display }) => display);
   },
   $c_exportTable() {
     const table = {};
-    this.$c_sortedHeaderFields.forEach((field) => {
+    this.$c_headerFields.forEach((field) => {
       if (field.item.content) {
         table[typeof field.header.content === 'function' ? field.header.content() : field.header.content] = field.item.key;
       }

@@ -216,7 +216,7 @@ export default function () {
       },
     },
     myToggle: false,
-    tableSelect: 'table1',
+    tableSelect: [],
     columnFilter: {},
     sticky: true,
   };

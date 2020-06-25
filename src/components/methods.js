@@ -17,18 +17,6 @@ export default {
       this.$_paginationEvent('sort');
     }
   },
-  // used for the show/hide columns dropdown
-  $_toggleDisplayColumn(col) {
-    const isDisplayed = this.localTableModel.displayColumns.find(column => column.item.key === col.item.key);
-    if (isDisplayed) {
-      this.localTableModel.displayColumns = this.localTableModel.displayColumns.filter(field => field.item.key !== col.item.key);
-    } else {
-      this.localTableModel.displayColumns.push(col);
-    }
-    this.$emit('click', this.localTableModel);
-    return this.localTableModel.displayColumns;
-  },
-
   $_isDisplayed(col) {
     return this.localTableModel.displayColumns.find(column => column.item.key === col.item.key);
   },
@@ -87,7 +75,7 @@ export default {
       this.$emit(`on-${type}`, {
         page: this.currentPage,
         pages: this.pages,
-        limit: this.paginationSize,
+        limit: this.$c_paginationSize,
         sortField: this.sortField,
         sortType: this.sortOrder,
         search: this.models.search,
@@ -99,10 +87,10 @@ export default {
   },
 
   async $_saveSettings() {
-    if (this.saveSettings && this.touchedSettingsColumns) {
+    if (this.saveSettings) {
       this.saveSettingsLoading = true;
       try {
-        const fields = JSON.parse(JSON.stringify(this.$c_sortedHeaderFields)).map((item, index) => {
+        const fields = JSON.parse(JSON.stringify(this.$c_headerFields)).map((item) => {
           const field = {
             header: {
               content: item.header.content,
@@ -111,13 +99,12 @@ export default {
               key: item.item.key,
               sortable: item.item.sortable || true,
             },
-            display: this.$c_shouldDisplayColumn[index] || false,
+            display: item.display
           };
           if (item.header.info) field.header.info = item.header.info;
           return field;
         });
         await this.saveSettings(fields);
-        this.touchedSettingsColumns = false;
         this.saveSettingsLoading = false;
       } catch (error) {
         this.saveSettingsLoading = false;

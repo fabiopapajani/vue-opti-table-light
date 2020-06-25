@@ -21,36 +21,9 @@
                         @input="$_submitSearch"
                         class="datatable-search-field">
           </b-form-input>
-
           <template v-slot:append v-if="enableColumns && saveSettings">
-            <b-dropdown class="columns-dropdown" :no-flip="true" right @hidden="$_saveSettings" :disabled="saveSettingsLoading">
-              <template slot="button-content">
-                <span v-if="saveSettingsLoading">Saving  <i class="fa fa-spinner fa-spin" aria-hidden="true"></i></span>
-                <span v-else>Columns</span>
-              </template>
-              <div class="card">
-                <ul class="list-group list-group-flush">
-                  <draggable v-model="localHeaderFields">
-                    <template v-for="(col, i) in $c_sortedHeaderFields">
-                      <li v-if="col.item.content"
-                          :key="i"
-                          class="list-group-item">
-                        <div class="d-flex justify-content-between w-100">
-                          <b-form-checkbox :checked="$c_shouldDisplayColumn[i]"
-                                          @change="$_toggleDisplayColumn(col)">
-                                          {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
-                          </b-form-checkbox>
-                          <div class="info">
-                            <span class="badge badge-primary badge-pill">{{ i + 1 }}</span>
-                            <i class="fa fa-th" aria-hidden="true"></i>
-                          </div>
-                        </div>
-                      </li>
-                    </template>
-                  </draggable>
-                </ul>
-              </div>
-            </b-dropdown>
+            <b-btn v-show="saveSettingsLoading"><i class="fa fa-spinner fa-spin" aria-hidden="true" title="Saving..."></i></b-btn>
+            <b-btn v-show="!saveSettingsLoading" @click="$refs.columnsSettingsModal.show()"><i class="fa fa-columns" aria-hidden="true"></i></b-btn>
           </template>
         </b-input-group>
       </div>
@@ -157,10 +130,10 @@
           <td v-if="selectable" class="column-checkbox">
             <input type="checkbox" :true-value="true" :false-value="false" :value="item.$selected" v-model="item.$selected" @change="$_selectItem(item)" />
           </td>
-          <template v-for="(col, j) in $c_sortedHeaderFields">
+          <template v-for="(col, j) in $c_headerFields">
             <td :key="j"
                 :class="col.item.cellClass"
-                v-if="$c_shouldDisplayColumn[j]"
+                v-if="col.display"
                 :style="col.item.style || ''"
                 @click="col.item.onClick && col.item.onClick(item, i)">
               <!-- CHECK IF FIELD IS A SLOT -->
@@ -224,9 +197,9 @@
     </div>
 
     <div class="row footer" v-if="showPagination">
-      <vue-opti-select class="col-md-2 col-sm-12" v-model="paginationSize" :list="rows"
-                       @click="$_pageSizeChanged()">
-      </vue-opti-select>
+      <vue-opti-select-light ref="paginationSizeDropdown" class="col-md-2 col-sm-12" v-model="paginationSize" :options="rows" @change="$_pageSizeChanged" :default="[this.defaultRows]">
+
+      </vue-opti-select-light>
       <div class="col-md-auto" v-if="enableExport">
         <template v-if="serverSidePagination">
           <download-excel
@@ -297,13 +270,13 @@
     <div class="row" v-if="$slots['bottom']">
       <slot name="bottom"></slot>
     </div>
+    <columns-settings-modal ref="columnsSettingsModal" v-model="localHeaderFields" @save="$_saveSettings" />
   </div>
 </template>
 
 <script>
 import JsonExcel from 'vue-json-excel';
-import { VueOptiSelect } from 'vue-opti-select';
-import draggable from 'vuedraggable';
+import { VueOptiSelectLight } from 'vue-opti-select-light';
 import props from './props';
 import data from './data';
 import computed from './computed';
@@ -312,6 +285,7 @@ import watch from './watch';
 import FilterInput from './FilterInput';
 import DataModel from './DataModel';
 import ColGroupTable from './ColGroupTable';
+import ColumnsSettingsModal from './ColumnsSettingsModal';
 
 export default {
   name: 'vue-opti-table-light',
@@ -322,10 +296,10 @@ export default {
   watch,
   components: {
     downloadExcel: JsonExcel,
-    VueOptiSelect,
-    draggable,
+    VueOptiSelectLight,
     FilterInput,
     ColGroupTable,
+    ColumnsSettingsModal,
   },
   model: {
     prop: 'tableModel',
@@ -350,7 +324,7 @@ export default {
         return {
           order: { key: this.sortField, order: this.sortOrder },
           search: { value: this.models.search, fields: this.$c_searchableFields },
-          headerFields: this.$c_sortedHeaderFields
+          headerFields: this.$c_headerFields
         };
       }, ({ order, search, headerFields }) => {
         // console.log('Apply Filter')

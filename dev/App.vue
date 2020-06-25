@@ -4,7 +4,7 @@
     <vue-opti-table-light
       selectable
       v-model="tableModel"
-      :name="`table-${tableSelect}`"
+      :name="`table-${$c_tableSelect}`"
       @on-sort="$_paginationChanged($event)"
       @on-search="$_searchExec($event)"
       @on-row-per-page-change="$_paginationChanged($event)"
@@ -26,12 +26,13 @@
       :column-filter-reset="false"
       :sticky="sticky">
       <template slot="search">
-        <vue-opti-select
-          :list="[ { value: 'table1', content: 'Table 1' }, { value: 'table2', content: 'Table 2' } ]"
+        <vue-opti-select-light
+          :options="[ { value: 'table1', content: 'Table 1' }, { value: 'table2', content: 'Table 2' } ]"
           class="col-sm-3"
           v-model="tableSelect"
-          placeholder="Tables">
-        </vue-opti-select>
+          placeholder="Tables"
+          :default="['table1']">
+        </vue-opti-select-light>
       </template>
       <template slot="email" slot-scope="props">
         {{props.item.email}}
@@ -50,7 +51,7 @@ import Vue from 'vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
-import { VueOptiSelect } from 'vue-opti-select';
+import { VueOptiSelectLight } from 'vue-opti-select-light';
 import VueOptiTableLight from '../src/index';
 import data from './data';
 import loader from './loader';
@@ -61,11 +62,18 @@ Vue.use(VueOptiTableLight);
 
 export default {
   name: 'test',
-  components: { VueOptiSelect },
+  components: { VueOptiSelectLight },
   data,
   computed: {
+    $c_tableSelect() {
+      try {
+        return this.tableSelect[0].value
+      } catch (err) {
+        return 'table1'
+      }
+    },
     $c_tableFields() {
-      if (this.tableSelect === 'table2') {
+      if (this.$c_tableSelect === 'table2') {
         return this.table.fields2;
       }
       return this.table.fields;

@@ -3,7 +3,8 @@ export default {
     this.currentPage = 1;
   },
   defaultRows(newVal) {
-    this.paginationSize = newVal;
+    this.$refs.paginationSizeDropdown.clear()
+    this.$refs.paginationSizeDropdown.add(newVal)
   },
   localHeaderFields(newVal) {
     this.localTableModel.columnsOrder = newVal;
@@ -13,8 +14,9 @@ export default {
     immediate: true,
     handler() {
       this.localTableModel = this.tableModel;
-      this.localHeaderFields = this.headerFields;
-      this.localTableModel.displayColumns = this.localHeaderFields.filter(field => field.display !== false);
+      this.localHeaderFields = this.headerFields.map(item => Object.assign({}, item));
+      this.localTableModel.displayColumns = []
+      // this.localTableModel.displayColumns = this.localHeaderFields.filter(field => field.display !== false);
       // Reset Filter on headers change
       this.filterFieldsModels = {};
       if (this.columnFilterReset) {
@@ -23,14 +25,10 @@ export default {
       }
       this.localHeaderFields.forEach((col) => {
         if (col.item.filter) this.$set(this.filterFieldsModels, col.item.key, this.columnFilterLocal[col.item.key] || []);
+        if (typeof col.display === 'undefined') col.display = true
+        if (col.display) this.localTableModel.displayColumns.push(col)
       });
       // this.$emit('click', this.localTableModel);
-    },
-    deep: true,
-  },
-  $c_shouldDisplayColumn: {
-    handler() {
-      this.touchedSettingsColumns = true;
     },
     deep: true,
   },
