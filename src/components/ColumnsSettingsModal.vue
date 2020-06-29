@@ -1,5 +1,5 @@
 <template>
-  <b-modal modal-class="columns-settings-modal" title-class="ml-auto" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" size="lg" title="Columns settings" ok-title="Save" body-class="py-0">
+  <b-modal modal-class="columns-settings-modal" title-class="ml-auto" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" size="lg" title="Columns settings" ok-title="Apply" body-class="py-0">
     <div class="row">
       <div class="col-6 py-3 items-col items-col-visibility">
         <div class="row mb-1">
