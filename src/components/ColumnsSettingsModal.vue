@@ -1,10 +1,10 @@
 <template>
-  <b-modal modal-class="columns-settings-modal" title-class="ml-auto" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" size="lg" title="Columns settings" ok-title="Save" body-class="py-0">
+  <b-modal modal-class="columns-settings-modal" title-class="ml-auto" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" size="lg" title="Columns settings" ok-title="Apply" body-class="py-0">
     <div class="row">
       <div class="col-6 py-3 items-col items-col-visibility">
-        <div class="row mb-1">
-          <h6 class="col font-weight-bold">Columns visibility</h6>
-          <div class="col pl-0">
+        <div class="items-col-visibility-header">
+          <h6 class="font-weight-bold">Columns visibility</h6>
+          <div class="search-container">
             <input class="col" type="search" placeholder="Search..." v-model="searchModel" />
           </div> 
         </div>
@@ -22,8 +22,8 @@
         </b-list-group>
       </div>
       <div class="col-6 py-3 items-col items-col-order">
-        <div class="row mb-1">
-          <h6 class="col font-weight-bold">Columns order</h6>
+        <div class="items-col-order-header">
+          <h6 class="font-weight-bold">Columns order</h6>
         </div>
         <b-list-group>
           <draggable v-model="model" @start="drag = true" @end="drag = false" v-bind="{ animation: 200, group: 'description', disabled: false, ghostClass: 'ghost' }">
