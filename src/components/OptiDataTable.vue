@@ -312,7 +312,7 @@ export default {
       this.localTableModel.selectedRows = [];
       this.$set(this, 'dataModel', new DataModel({items}));
       this.$emit('click', this.localTableModel);
-    }, { immediate: true });
+    }, { immediate: true, deep: true });
     // this.$watch('dataModel', () => { // Log Data Model Changes
     //   console.log('%cChange DataModel', 'color: #fd7e14;');
     // });
