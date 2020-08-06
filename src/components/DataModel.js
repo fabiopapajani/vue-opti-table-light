@@ -16,9 +16,11 @@ export default class DataModel {
   }
 
   applyFilter ({ key = '', order = '' }, { value = '', fields = [] }, headerFields) {
-    this._sortItems({ key, order }, this.local.items);
-    this.output.items = this._search({ value, fields }, this.local.items);
-    this.output.totals = this._totals(headerFields, this.output.items);
+    if (this.local.items.length) {
+      this._sortItems({ key, order }, this.local.items);
+      this.output.items = this._search({ value, fields }, this.local.items);
+      this.output.totals = this._totals(headerFields, this.output.items);
+    }
   }
 
   _sortItems ({ key = '', order = '' }, items) {
