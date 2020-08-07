@@ -196,7 +196,7 @@
       </table>
     </div>
 
-    <div class="row footer" v-if="showPagination">
+    <div class="row footer" v-if="showPagination && $c_items.length">
       <vue-opti-select-light ref="paginationSizeDropdown" class="col-md-2 col-sm-12 optimizer-select" v-model="paginationSize" :options="rows" @change="$_pageSizeChanged" :default="[this.defaultRows]">
 
       </vue-opti-select-light>
