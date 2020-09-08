@@ -134,4 +134,8 @@ export default {
       throw error;
     }
   },
+
+  $_rowKey(item) {
+    return this.rowKey ? item[this.rowKey] : null
+  }
 };

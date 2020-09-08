@@ -18,6 +18,7 @@ export default {
   enableColumnsLabel: { type: String, default: 'Columns' },
   defaultRows: { type: Number, default: 10 }, // Not dynamic, need full reload
   tableModel: null, // v-model
+  rowKey: null,
   // searchValue: { type: String, default: '' },
   serverSidePagination: { type: Boolean, default: false },  // Not dynamic
   loading: { type: Boolean, default: false },
