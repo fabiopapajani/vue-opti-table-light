@@ -30,15 +30,16 @@ export default {
   // Select All Rows
   $_selectAllItemsAction() {
     this.$c_items.forEach(row => { row.$selected = this.models.selectAllCheckbox; });
-    this.localTableModel.selectedRows = this.models.selectAllCheckbox ? [...this.$c_items] : [];
+    this.localTableModel.selectedRows = this.models.selectAllCheckbox ? this.$c_items.map(({ $ref }) => $ref) : [];
     this.$emit('click', this.localTableModel);
   },
 
   $_selectItem(row) {
     if (row.$selected) {
-      this.localTableModel.selectedRows.push(row);
+      this.localTableModel.selectedRows.push(row.$ref);
     } else {
-      this.localTableModel.selectedRows = this.localTableModel.selectedRows.filter(({ $uid }) => $uid !== row.$uid);
+      this.localTableModel.selectedRows = this.localTableModel.selectedRows.filter((selectedRow) => selectedRow !== row.$ref);
+      // this.localTableModel.selectedRows = this.localTableModel.selectedRows.filter(({ $uid }) => $uid !== row.$uid);
       if (this.models.selectAllCheckbox) this.models.selectAllCheckbox = false
     }
     this.$emit('click', this.localTableModel);

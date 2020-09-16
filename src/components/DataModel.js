@@ -6,7 +6,7 @@ export default class DataModel {
     this.local = { items: [], itemsMap: {} };
     this.output = { items: [], itemsMap: {}, totals: {} };
     items.forEach((item, index) => {
-      const _itemLocal = Object.assign({ $uid: `uid-${index}`, $selected: false, __ref: item }, item);
+      const _itemLocal = Object.assign({ $uid: `uid-${index}`, $selected: false, $ref: item }, item);
       this.local.items.push(_itemLocal);
       this.local.itemsMap[_itemLocal.$uid] = _itemLocal;
       const _itemOutput = Object.assign({}, _itemLocal);

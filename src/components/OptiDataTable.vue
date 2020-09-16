@@ -138,7 +138,7 @@
                 @click="col.item.onClick && col.item.onClick(item, i)">
               <!-- CHECK IF FIELD IS A SLOT -->
               <div v-if="col.item.slot" :class="[col.item.class, 'field']">
-                <slot :name="col.item.slot" :item="item" :field="col" :i="i"></slot>
+                <slot :name="col.item.slot" :item="item.$ref" :field="col" :i="i"></slot>
               </div>
               <!-- OTHERWISE RENDER FIELD  -->
               <div v-else :class="[col.item.class, 'field']" v-html="col.item.content ? col.item.content(item) : item[col.item.key]">
@@ -312,7 +312,7 @@ export default {
       this.localTableModel.selectedRows = [];
       this.$set(this, 'dataModel', new DataModel({items}));
       this.$emit('click', this.localTableModel);
-    }, { immediate: true, deep: true });
+    }, { immediate: true });
     // this.$watch('dataModel', () => { // Log Data Model Changes
     //   console.log('%cChange DataModel', 'color: #fd7e14;');
     // });
