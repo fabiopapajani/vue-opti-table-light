@@ -308,7 +308,7 @@ export default {
   created() {
     // Create Data Model
     this.$watch('items', (items) => { // Create Data Model on items change
-      console.log('%cChange Items', 'color: #007bff;');
+      // console.log('%cChange Items', 'color: #007bff;');
       this.localTableModel.selectedRows = [];
       this.$set(this, 'dataModel', new DataModel({items}));
       this.$emit('click', this.localTableModel);
