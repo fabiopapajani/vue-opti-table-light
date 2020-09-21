@@ -308,7 +308,7 @@ export default {
   created() {
     // Create Data Model
     this.$watch('items', (items) => { // Create Data Model on items change
-      // console.log('%cChange Items', 'color: #007bff;');
+      console.log('%cChange Items', 'color: #007bff;');
       this.localTableModel.selectedRows = [];
       this.$set(this, 'dataModel', new DataModel({items}));
       this.$emit('click', this.localTableModel);
@@ -335,6 +335,8 @@ export default {
       });
       this.$watch('items', () => {
         this.$_changePageAction(1);
+        // console.log('Apply Filter on change items')
+        this.dataModel.applyFilter({ key: this.sortField, order: this.sortOrder }, { value: this.models.search, fields: this.$c_searchableFields }, this.$c_headerFields);
       });
     }
   },
