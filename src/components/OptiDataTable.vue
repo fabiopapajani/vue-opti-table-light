@@ -39,11 +39,11 @@
 
         <!-- ALL CHECKBOX & TABLE HEADERS-->
         <thead>
-          <tr>
+          <tr class="column-header">
             <th class="column-checkbox" v-if="selectable">
               <input type="checkbox" :true-value="true" :false-value="false" :value="models.selectAllCheckbox" v-model="models.selectAllCheckbox" @change="$_selectAllItemsAction()" />
             </th>
-            <th v-for="(col, i) in $c_headerFields" :key="i" :style="col.header.style || ''">
+            <th v-for="(col, i) in $c_headerFields" :key="i" :style="col.header.style || ''" :class="col.colClass">
               <div class="header">
                 <div v-if="col.item.sortable" class="sort p-2" @click="$_fieldClickAction(col)">
                   <div :class="{'arrow-up-active': sortKey === col.item.key && sortOrder === 'asc'}"
@@ -69,8 +69,8 @@
             </th>
           </tr>
           <tr v-if="columnFilterEnable" class="column-filter">
-            <th v-if="selectable"></th>
-            <th v-for="(col, i) in $c_headerFields" :key="i">
+            <th class="column-checkbox" v-if="selectable"></th>
+            <th v-for="(col, i) in $c_headerFields" :key="i" :class="col.colClass">
               <template v-if="filterFieldsModels[col.item.key]">
                 <filter-input v-model="filterFieldsModels[col.item.key]" @input="(payload) => $_onChangeColumnFilter(col.item.key, payload)" />
               </template>
@@ -87,11 +87,11 @@
 
         <!--ALL CHECKBOX & TABLE HEADERS-->
         <thead  v-else>
-          <tr>
+          <tr class="column-header">
             <th class="column-checkbox" v-if="selectable">
               <input type="checkbox" :true-value="true" :false-value="false" :value="models.selectAllCheckbox" v-model="models.selectAllCheckbox" @change="$_selectAllItemsAction()" />
             </th>
-            <th v-for="(col, i) in $c_headerFields" :key="i" :style="col.header.style || ''">
+            <th v-for="(col, i) in $c_headerFields" :key="i" :style="col.header.style || ''" :class="col.colClass">
                 <div class="header">
                   <div v-if="col.item.sortable" class="sort p-2" @click="$_fieldClickAction(col)">
                     <div :class="{'arrow-up-active': sortKey === col.item.key && sortOrder === 'asc'}"
@@ -114,7 +114,7 @@
                   </div>
                   <!--DROPDOWN FILTERS-->
                 </div>
-              </th>
+            </th>
           </tr>
           <tr v-if="columnFilterEnable" class="column-filter">
             <th v-if="selectable"></th>
@@ -132,7 +132,7 @@
           </td>
           <template v-for="(col, j) in $c_headerFields">
             <td :key="j"
-                :class="col.item.cellClass"
+                :class="[col.item.cellClass, col.colClass]"
                 v-if="col.display"
                 :style="col.item.style || ''"
                 @click="col.item.onClick && col.item.onClick(item, i)">
@@ -152,12 +152,12 @@
           <tfoot v-if="$c_showTotal && $c_items.length && $c_totals">
             <tr>
               <td v-if="selectable" class="col-disable-bg"></td>
-                <td v-for="(col, i) in $c_headerFields" :key="i" 
-                  :style="(col.item.total && col.item.total.style) || col.item.style || ''"
-                  :class="{'col-disable-bg': !col.item.total}">
-                <template v-if="col.item.total">
-                  <div v-html="col.item.total.content($c_totals)"></div>
-                </template>
+              <td v-for="(col, i) in $c_headerFields" :key="i" 
+                :style="(col.item.total && col.item.total.style) || col.item.style || ''"
+                :class="[{'col-disable-bg': !col.item.total}, col.colClass]">
+              <template v-if="col.item.total">
+                <div v-html="col.item.total.content($c_totals)"></div>
+              </template>
               </td>
             </tr>
           </tfoot>
@@ -184,12 +184,12 @@
         <tfoot v-if="$c_showTotal && $c_items.length && $c_totals">
           <tr>
             <td v-if="selectable" class="col-disable-bg"></td>
-              <td v-for="(col, i) in $c_headerFields" :key="i" 
-                :style="(col.item.total && col.item.total.style) || col.item.style || ''"
-                :class="{'col-disable-bg': !col.item.total}">
-              <template v-if="col.item.total">
-                <div v-html="col.item.total.content($c_totals)"></div>
-              </template>
+            <td v-for="(col, i) in $c_headerFields" :key="i" 
+              :style="(col.item.total && col.item.total.style) || col.item.style || ''"
+              :class="[{'col-disable-bg': !col.item.total}, col.colClass]">
+            <template v-if="col.item.total">
+              <div v-html="col.item.total.content($c_totals)"></div>
+            </template>
             </td>
           </tr>
         </tfoot>

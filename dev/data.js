@@ -29,6 +29,7 @@ export default function () {
               style: { background: '#fffdf5', fontWeight: 'bold', textAlign: 'center' },
             },
           },
+          colClass: 'testClass',
           colStyle: 'width: 150px;'
         },
         {
