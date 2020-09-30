@@ -1,5 +1,5 @@
 <template>
-  <div :class="`datatable-wrapper-${sticky ? 'sticky' : 'no-sticky'} datatable-wrapper`">
+  <div :class="[{ 'datatable-wrapper-empty': $c_items.length === 0 }, `datatable-wrapper-${sticky ? 'sticky' : 'no-sticky'} datatable-wrapper`]">
     <!--TOP SLOT-->
     <div class="row" v-if="$slots['top']">
       <slot name="top"></slot>
