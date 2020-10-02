@@ -87,11 +87,11 @@ export default {
     }
   },
 
-  async $_saveSettings() {
+  async $_saveSettings(customizedFields) {
     if (this.saveSettings) {
       this.saveSettingsLoading = true;
       try {
-        const fields = JSON.parse(JSON.stringify(this.$c_headerFields)).map((item) => {
+        const fields = JSON.parse(JSON.stringify(customizedFields)).map((item) => {
           const field = {
             header: {
               content: item.header.content,
