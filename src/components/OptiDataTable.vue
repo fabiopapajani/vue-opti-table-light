@@ -151,7 +151,7 @@
           <!--TABLE FOOTER, TOTALS-->
           <tfoot v-if="$c_showTotal && $c_items.length && $c_totals">
             <tr>
-              <td v-if="selectable" class="col-disable-bg"></td>
+              <td v-if="selectable" class="column-checkbox col-disable-bg"></td>
               <td v-for="(col, i) in $c_headerFields" :key="i" 
                 :style="(col.item.total && col.item.total.style) || col.item.style || ''"
                 :class="[{'col-disable-bg': !col.item.total}, col.colClass]">
@@ -183,7 +183,7 @@
         <!--TABLE FOOTER, TOTALS-->
         <tfoot v-if="$c_showTotal && $c_items.length && $c_totals">
           <tr>
-            <td v-if="selectable" class="col-disable-bg"></td>
+            <td v-if="selectable" class="column-checkbox col-disable-bg"></td>
             <td v-for="(col, i) in $c_headerFields" :key="i" 
               :style="(col.item.total && col.item.total.style) || col.item.style || ''"
               :class="[{'col-disable-bg': !col.item.total}, col.colClass]">
