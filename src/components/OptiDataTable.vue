@@ -306,7 +306,7 @@ export default {
     event: 'click',
   },
   created() {
-    this.localResizedColumns = { ...this.resizedColumns };
+    if (this.sticky) this.localResizedColumns = { ...this.resizedColumns };
     // Create Data Model
     this.$watch('items', (items) => { // Create Data Model on items change
       // console.log('%cChange Items', 'color: #007bff;');
