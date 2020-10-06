@@ -1,6 +1,5 @@
 <template>
   <div class="container mt-2" v-if="!preloader">
-
     <vue-opti-table-light
       selectable
       v-model="tableModel"
@@ -15,6 +14,8 @@
       :sort="{ key: 'email', order: 'asc' }"
       :serverSidePagination="serverSidePagination"
       :loading="loading"
+      :resizedColumns="resizedColumns"
+      @resize="$_handleColumnResize($event)"
       :pages="pageCount"
       :page="currentPage"
       :header-fields="$c_tableFields"
@@ -122,11 +123,17 @@ export default {
         }, 3000);
       });
     },
+
+    $_handleColumnResize(items) {
+      localStorage.setItem('fields', JSON.stringify(items));
+    }
   },
   async created() {
     this.preloader = true;
     await this.$_loadData({ page: 0, limit: 10 });
     this.preloader = false;
+
+    this.resizedColumns = JSON.parse(localStorage.getItem('fields')) || {};
   },
 };
 </script>

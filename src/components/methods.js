@@ -138,5 +138,34 @@ export default {
 
   $_rowKey(item) {
     return this.rowKey ? item[this.rowKey] : null
-  }
+  },
+
+  // Handle Mouse Selection Start
+  $_handleMouseDown(e, col) {
+    console.log('mousedown');
+    this.currentColumn = col;
+    this.currentHeaderField = e.target.parentElement;
+    this.resizeStartOffset = this.currentHeaderField.offsetWidth - e.pageX;
+
+    document.addEventListener('mousemove', this.$_handleMouseMove);
+    document.addEventListener('mouseup', this.$_handleMouseUp);
+  },
+
+  // Handle Column Resize
+  $_handleMouseMove(e) {
+    console.log('mousemove');
+    this.$set(this.localResizedColumns, [this.currentColumn.item.key], this.resizeStartOffset + e.pageX);
+  },
+
+  // Handle Mouse Resize End
+  $_handleMouseUp() {
+    console.log('mouseup');
+    this.resizeStartOffset = 0;
+    this.currentHeaderField = undefined;
+    this.currentColumn = {};
+    this.$emit('resize', this.localResizedColumns);
+
+    document.removeEventListener('mousemove', this.$_handleMouseMove);
+    document.removeEventListener('mouseup', this.$_handleMouseUp);
+  },
 };

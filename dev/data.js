@@ -30,7 +30,9 @@ export default function () {
             },
           },
           colClass: 'testClass',
-          colStyle: 'width: 150px;'
+          colStyle: {
+            width: '200px'
+          }
         },
         {
           header: { content: () => 'Lastname', style: '' },
@@ -67,6 +69,9 @@ export default function () {
             searchable: true,
             style: { textAlign: 'center' },
           },
+          colStyle: {
+            width: '150px'
+          }
         },
         {
           header: { content: 'Balance', style: '' },
@@ -220,5 +225,6 @@ export default function () {
     tableSelect: [],
     columnFilter: {},
     sticky: true,
+    resizedColumns: {}
   };
 }

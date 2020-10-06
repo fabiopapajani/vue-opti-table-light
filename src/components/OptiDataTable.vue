@@ -35,7 +35,7 @@
       <table v-if="sticky" ref="table" :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
 
         <!-- SYNC FIXED COLUMNS -->
-        <col-group-table :selectable="selectable" :headerFields="$c_headerFields" />
+        <col-group-table :selectable="selectable" :resized-columns="localResizedColumns" :headerFields="$c_headerFields" />
 
         <!-- ALL CHECKBOX & TABLE HEADERS-->
         <thead>
@@ -66,6 +66,7 @@
                 </div>
                 <!--DROPDOWN FILTERS-->
               </div>
+              <div @mousedown="$_handleMouseDown($event, col)" class="column-resize"></div>
             </th>
           </tr>
           <tr v-if="columnFilterEnable" class="column-filter">
@@ -83,7 +84,7 @@
     <div ref="tableWraper" class="table-holder">
       <table ref="table" :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
         <!-- SYNC FIXED COLUMNS -->
-        <col-group-table v-if="sticky" :selectable="selectable" :headerFields="$c_headerFields" />
+        <col-group-table v-if="sticky" :resized-columns="localResizedColumns" :selectable="selectable" :headerFields="$c_headerFields" />
 
         <!--ALL CHECKBOX & TABLE HEADERS-->
         <thead  v-else>
@@ -173,12 +174,11 @@
         Loading...
       </div>
     </div>
-
     <div v-if="sticky" ref="stickyFooter" class="stickyFooter">
       <table ref="table" :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
 
         <!-- SYNC FIXED COLUMNS -->
-        <col-group-table :selectable="selectable" :headerFields="$c_headerFields" />
+        <col-group-table :resized-columns="localResizedColumns" :selectable="selectable" :headerFields="$c_headerFields" />
 
         <!--TABLE FOOTER, TOTALS-->
         <tfoot v-if="$c_showTotal && $c_items.length && $c_totals">
@@ -306,6 +306,7 @@ export default {
     event: 'click',
   },
   created() {
+    this.localResizedColumns = { ...this.resizedColumns };
     // Create Data Model
     this.$watch('items', (items) => { // Create Data Model on items change
       // console.log('%cChange Items', 'color: #007bff;');
@@ -400,6 +401,20 @@ export default {
       position: sticky;
       top: 0;
       background-color: #fff;
+
+      th {
+        position: relative;
+
+        .column-resize {
+          position: absolute;
+          right: 0;
+          height: 100%;
+          width: 3px;
+          bottom: 0;
+          background: inherit;
+          cursor: col-resize;
+        }
+      }
     }
     .stickyFooter {
       overflow-x: auto;

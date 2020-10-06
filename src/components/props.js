@@ -7,6 +7,7 @@ export default {
   items: { type: Array, required: true },
   page: { type: Number, default: 1 },
   pages: { type: Number, default: 1 },
+  resizedColumns: { type: Object, default: () => ({}) },
   selectLabel: { type: String, default: 'items' },
   searchClass: { type: String, default: '' },
   sort: { type: Object, default: () => ({ key: '', order: '', field: '' }) }, // ?

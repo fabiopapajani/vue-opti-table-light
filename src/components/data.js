@@ -21,6 +21,10 @@ export default function () {
     csvDownloadLoading: false,
     xlsDownloadLoading: false,
     columnFilterLocal: {},
-    dataModel: {}
+    dataModel: {},
+    localResizedColumns: {},
+    currentHeaderField: undefined,
+    currentColumn: {},
+    resizeStartOffset: 0,
   };
 }
