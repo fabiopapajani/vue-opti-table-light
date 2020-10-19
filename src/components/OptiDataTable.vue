@@ -197,10 +197,10 @@
     </div>
 
     <div class="row footer" v-if="showPagination && $c_items.length">
-      <vue-opti-select-light ref="paginationSizeDropdown" class="col-md-2 col-sm-12 optimizer-select" v-model="paginationSize" :options="rows" @change="$_pageSizeChanged" :default="[this.defaultRows]">
+      <vue-opti-select-light ref="paginationSizeDropdown" class="col-md-2 col-sm-12 optimizer-select pr-md-0 mb-2 mb-md-0" v-model="paginationSize" :options="rows" @change="$_pageSizeChanged" :default="[this.defaultRows]">
 
       </vue-opti-select-light>
-      <div class="col-md-auto" v-if="enableExport">
+      <div class="col-md-auto d-flex mb-2 mb-md-0" v-if="enableExport">
         <template v-if="serverSidePagination">
           <download-excel
             class="btn btn-secondary pointer-button btn-export-csv"
@@ -245,7 +245,7 @@
         </template>
       </div>
       <div class="col-md-4 col-sm-12 ml-md-auto">
-        <ul class="pagination justify-content-end unselectable">
+        <ul class="pagination justify-content-center justify-content-md-end unselectable">
           <li class="page-item">
             <a class="page-link d-flex justify-content-center align-items-center" @click="$_changePageAction(1)">
               <span aria-hidden="true">&laquo;</span>
