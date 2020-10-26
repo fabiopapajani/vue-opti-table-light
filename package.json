@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.4",
+    "loadash": "^1.0.0",
     "vue": "^2.6.11",
     "vue-json-excel": "^0.2.98",
     "vue-opti-select-light": "^0.3.5",

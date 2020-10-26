@@ -286,6 +286,7 @@ import FilterInput from './FilterInput';
 import DataModel from './DataModel';
 import ColGroupTable from './ColGroupTable';
 import ColumnsSettingsModal from './ColumnsSettingsModal';
+import _ from 'lodash';
 
 export default {
   name: 'vue-opti-table-light',
@@ -344,7 +345,7 @@ export default {
   mounted() {
     /* ------------ Fake scroller Bind events -------------*/
     const tableTop = this.$refs.stickyHeader;
-    const tableTopChild = tableTop.childNodes[0];
+    // const tableTopChild = tableTop.childNodes[0];
 
     const tableWraper = this.$refs.tableWraper;
     // const table = this.$refs.table;
@@ -360,22 +361,58 @@ export default {
     };
 
     if (this.sticky) {
-      tableBottom.onscroll = () => onScrollFn(tableBottom, [tableTop, tableWraper]);
-      tableWraper.onscroll = () => onScrollFn(tableWraper, [tableTop, tableBottom]);
-      const scrollObserver = new ResizeObserver(() => {
-        tableTop.style.width = getComputedStyle(tableWraper).width;
-        tableBottom.style.width = getComputedStyle(tableWraper).width;
-      });
-      scrollObserver.observe(tableWraper);
+      let onScrollBottom = true;
+      let onScrollWraper = true;
+      const enableOnScrollBottom = _.debounce(() => { onScrollBottom = true; }, 500);
+      const enableOnScrollWraper = _.debounce(() => { onScrollWraper = true; }, 500);
+
+      tableBottom.onscroll = () => {
+        if (onScrollBottom) {
+          onScrollWraper = false;
+          onScrollFn(tableBottom, [tableTop, tableWraper]);
+          enableOnScrollWraper();
+        }
+      }
+      tableWraper.onscroll = () => {
+        if (onScrollWraper) {
+          onScrollBottom = false;
+          onScrollFn(tableWraper, [tableTop, tableBottom]);
+          enableOnScrollBottom();
+        }
+      }
+      // const scrollObserver = new ResizeObserver(() => {
+      //   tableTop.style.width = getComputedStyle(tableWraper).width;
+      //   tableBottom.style.width = getComputedStyle(tableWraper).width;
+      // });
+      // scrollObserver.observe(tableWraper);
       // scrollObserver.observe(table);
     } else {
-      tableTop.onscroll = () => onScrollFn(tableTop, [tableWraper]);
-      tableWraper.onscroll = () => onScrollFn(tableWraper, [tableTop]);
-      const scrollObserver = new ResizeObserver(() => {
-        tableTop.style.width = getComputedStyle(tableWraper).width;
-        tableTopChild.style.width = getComputedStyle(tableWraper).width;
-      });
-      scrollObserver.observe(tableWraper);
+      let onScrollTop = true;
+      let onScrollWraper = true;
+      const enableOnScrollTop = _.debounce(() => { onScrollTop = true; }, 500);
+      const enableOnScrollWraper = _.debounce(() => { onScrollWraper = true; }, 500);
+
+      tableTop.onscroll = () => {
+        if (onScrollTop) {
+          onScrollWraper = false;
+          onScrollFn(tableTop, [tableWraper]);
+          enableOnScrollWraper();
+        }
+      }
+      tableWraper.onscroll = () => {
+        if (onScrollWraper) {
+          onScrollTop = false;
+          onScrollFn(tableWraper, [tableTop]);
+          enableOnScrollTop();
+        }
+      }
+      // tableTop.onscroll = () => onScrollFn(tableTop, [tableWraper]);
+      // tableWraper.onscroll = () => onScrollFn(tableWraper, [tableTop]);
+      // const scrollObserver = new ResizeObserver(() => {
+      //   tableTop.style.width = getComputedStyle(tableWraper).width;
+      //   tableTopChild.style.width = getComputedStyle(tableWraper).width;
+      // });
+      // scrollObserver.observe(tableWraper);
       // scrollObserver.observe(tableTop);
     }
     /* ------------ ------------------------- -------------*/
