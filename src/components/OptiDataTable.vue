@@ -32,7 +32,7 @@
     <!-- END SELECT ALL OPTION -->
     <!--TABLE -->
     <div ref="stickyHeader" class="stickyHeader">
-      <table v-if="sticky" ref="table" :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
+      <table v-if="sticky" :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
 
         <!-- SYNC FIXED COLUMNS -->
         <col-group-table :selectable="selectable" :resized-columns="localResizedColumns" :headerFields="$c_headerFields" />
@@ -175,7 +175,7 @@
       </div>
     </div>
     <div v-if="sticky" ref="stickyFooter" class="stickyFooter">
-      <table ref="table" :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
+      <table :class="[{'table-hover': hover}, 'table table-striped table-sm mb-0']">
 
         <!-- SYNC FIXED COLUMNS -->
         <col-group-table :resized-columns="localResizedColumns" :selectable="selectable" :headerFields="$c_headerFields" />
@@ -347,8 +347,8 @@ export default {
     const tableTopChild = tableTop.childNodes[0];
 
     const tableWraper = this.$refs.tableWraper;
-    const table = this.$refs.table;
-    
+    // const table = this.$refs.table;
+    // console.log(table);
     const tableBottom = this.$refs.stickyFooter;
 
     let areScrolling = 0;
@@ -361,21 +361,22 @@ export default {
 
     if (this.sticky) {
       tableBottom.onscroll = () => onScrollFn(tableBottom, [tableTop, tableWraper]);
+      tableWraper.onscroll = () => onScrollFn(tableWraper, [tableTop, tableBottom]);
       const scrollObserver = new ResizeObserver(() => {
         tableTop.style.width = getComputedStyle(tableWraper).width;
         tableBottom.style.width = getComputedStyle(tableWraper).width;
       });
       scrollObserver.observe(tableWraper);
-      scrollObserver.observe(table);
+      // scrollObserver.observe(table);
     } else {
       tableTop.onscroll = () => onScrollFn(tableTop, [tableWraper]);
       tableWraper.onscroll = () => onScrollFn(tableWraper, [tableTop]);
       const scrollObserver = new ResizeObserver(() => {
         tableTop.style.width = getComputedStyle(tableWraper).width;
-        tableTopChild.style.width = getComputedStyle(table).width;
+        tableTopChild.style.width = getComputedStyle(tableWraper).width;
       });
       scrollObserver.observe(tableWraper);
-      scrollObserver.observe(table);
+      // scrollObserver.observe(tableTop);
     }
     /* ------------ ------------------------- -------------*/
   },
@@ -440,7 +441,8 @@ export default {
   }
   
   .table-holder {
-    overflow-x: hidden;
+    // overflow-x: hidden;
+    overflow-x: auto;
     border: 1px solid #e1e6ef;
     border-top: 0;
   }
