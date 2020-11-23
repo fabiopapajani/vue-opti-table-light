@@ -29,4 +29,6 @@ export default {
   columnFilterEnable: { type: Boolean, default: false },
   columnFilter: { type: Object, default: () => ({}) }, // .sync
   columnFilterReset: { type: Boolean, default: true },
+  updateCustomMetric: { type: Function, default: () => {} },
+  customMetricOptions: { type: Array, default: () => [] },
 };

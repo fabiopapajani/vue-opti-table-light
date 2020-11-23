@@ -197,7 +197,7 @@
     </div>
 
     <div class="row footer" v-if="showPagination && $c_items.length">
-      <vue-opti-select-light ref="paginationSizeDropdown" class="col-md-2 col-sm-12 optimizer-select pr-md-0 mb-2 mb-md-0" v-model="paginationSize" :options="rows" @change="$_pageSizeChanged" :default="[this.defaultRows]">
+      <vue-opti-select-light ref="paginationSizeDropdown" class="col-md-2 col-sm-12 optimizer-select pr-md-0 mb-2 mb-md-0" v-model="paginationSize" :options="rows" @change="$_pageSizeChanged" :value="[this.defaultRows]">
 
       </vue-opti-select-light>
       <div class="col-md-auto d-flex mb-2 mb-md-0" v-if="enableExport">
@@ -270,7 +270,7 @@
     <div class="row" v-if="$slots['bottom']">
       <slot name="bottom"></slot>
     </div>
-    <columns-settings-modal ref="columnsSettingsModal" v-model="localHeaderFields" @save="$_saveSettings" />
+    <columns-settings-modal ref="columnsSettingsModal" v-model="localHeaderFields" @save="$_saveSettings" :update-custom-metric="updateCustomMetric" :custom-metric-options="customMetricOptions" />
   </div>
 </template>
 

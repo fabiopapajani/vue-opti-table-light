@@ -88,6 +88,7 @@ export default function () {
               style: { background: '#fffdf5', fontWeight: 'bold', textAlign: 'center' },
             },
           },
+          customMetric: '( impressions + ts_clicks ) / 0.2',
         },
         {
           header: { content: 'Phone', style: '' },

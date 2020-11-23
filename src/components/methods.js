@@ -103,6 +103,7 @@ export default {
             display: item.display
           };
           if (item.header.info) field.header.info = item.header.info;
+          if (typeof item.customMetric !== 'undefined') field.customMetric = item.customMetric;
           return field;
         });
         await this.saveSettings(fields);

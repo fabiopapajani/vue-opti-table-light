@@ -1,5 +1,5 @@
 <template>
-  <b-modal modal-class="columns-settings-modal" title-class="ml-auto" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" size="lg" title="Columns settings" ok-title="Apply" body-class="py-0">
+  <b-modal :modal-class="[{ 'd-none': hideModal }, 'columns-settings-modal']" title-class="ml-auto" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" size="lg" title="Columns settings" ok-title="Apply" body-class="py-0">
     <div class="row">
       <div class="col-6 py-3 items-col items-col-visibility">
         <div class="items-col-visibility-header">
@@ -16,6 +16,18 @@
               <i v-if="col.header.info"
                 v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window' }"
                 class="fa fa-info-circle info-icon"></i>
+              <div v-if="typeof col.customMetric !== 'undefined'" class="custom-metrics-actions d-inline-block pull-right">
+                <i class="fa fa-edit mr-2" title="Edit" @click.prevent="$_editCustomMetric(col)"></i>
+                <i class="fa fa-repeat" title="Reset" :id="`reset-${col.item.key}`" @click.prevent></i>
+                <b-popover :ref="`reset-${col.item.key}`" :target="`reset-${col.item.key}`" triggers="click" placement="top">
+                  <template #title>Reset {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }} ?</template>
+                  <b-btn :disabled="resetCustomMetricLoading" size="sm" variant="danger" class="mr-2" @click="$_resetCustomMetric(col)">
+                    <template v-if="resetCustomMetricLoading"> <i class="fa fa-spinner fa-spin"></i></template>
+                    Yes, Reset
+                  </b-btn>
+                  <b-btn :disabled="resetCustomMetricLoading" size="sm" variant="info" @click="$_hideResetPopoever(col)">No, Keep</b-btn>
+                </b-popover>
+              </div>
             </label>
           </b-list-group-item>
           <div class="space"></div>
@@ -55,17 +67,22 @@
         </b-list-group>
       </div>
     </div>
+    <custom-metric-modal ref="customMetricModal" @hidden="hideModal = false" :submit="$_updateCustomMetric" :custom-metric-options="customMetricOptions" />
   </b-modal>
 </template>
 
 <script>
 import draggable from 'vuedraggable';
+import CustomMetricModal from './CustomMetricModal.vue';
+import _ from 'lodash';
 
 export default {
   name: 'columnSettingsModal',
-  components: { draggable },
+  components: { draggable, CustomMetricModal },
   props: {
-    value: { type: Array, default: () => [] }
+    value: { type: Array, default: () => [] },
+    updateCustomMetric: { type: Function, default: () => {} },
+    customMetricOptions: { type: Array, default: () => [] },
   },
   data () {
     return {
@@ -74,6 +91,8 @@ export default {
       model: [],
       displayModel: [],
       searchModel: '',
+      hideModal: false,
+      resetCustomMetricLoading: false,
     }
   },
   created () {
@@ -124,6 +143,41 @@ export default {
       this.displayModel = this.value.map(item => Object.assign({}, item))
       this.model = [...this.displayModel];
       this.searchModel = '';
+    },
+    $_editCustomMetric (column) {
+      try {
+        const columnItem = { key: column.item.key, formula: column.customMetric || '' }
+        columnItem.name = typeof column.header.content === 'function' ? column.header.content() : column.header.content;
+        if (column.options && column.options.format) columnItem.format = column.options.format;
+        this.$refs['customMetricModal'].show(columnItem);
+        this.hideModal = true;
+      } catch(err) {
+        console.log(err);
+      }
+    },
+    $_hideResetPopoever (column) {
+      try {
+        this.$refs[`reset-${column.item.key}`][0].$emit('close');
+      } catch (err) { /* Do Nothing */ }
+    },
+    async $_resetCustomMetric (column) {
+      const metric = { key: column.item.key, name: `${column.item.key.charAt(0).toUpperCase() + column.item.key.slice(1)}`, formula: '', format: 'number' };
+      await this.$_updateCustomMetric(metric)
+      this.$_hideResetPopoever(column);
+    },
+    async $_updateCustomMetric(metric) {
+      await this.updateCustomMetric(metric);
+      const headerFieldIndex = this.model.findIndex(({ item: { key } }) => metric.key === key);
+      if (this.model[headerFieldIndex]) {
+        const headerField = _.cloneDeep(this.model[headerFieldIndex]);
+        headerField.header.content = metric.name;
+        headerField.customMetric = metric.formula;
+        if (!headerField.options) headerField.options = {};
+        headerField.options.format = metric.format;
+        const model = [...this.model];
+        model[headerFieldIndex] = headerField;
+        this.$emit('input', model);
+      }
     }
   }
 }
@@ -137,6 +191,12 @@ export default {
         .items-col {
           &.items-col-visibility {
             border-right: 1px solid #dee2e6;
+            .custom-metrics-actions {
+              color: #6c757d;
+              .fa:hover {
+                color: #212529;
+              }
+            }
           }
           &.items-col-order {
             .list-group-item {

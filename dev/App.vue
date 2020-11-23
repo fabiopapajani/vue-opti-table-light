@@ -25,14 +25,16 @@
       :column-filter-enable="true"
       :column-filter.sync="columnFilter"
       :column-filter-reset="false"
-      :sticky="sticky">
+      :sticky="sticky"
+      :update-custom-metric="$_updateCustomMetric"
+      :custom-metric-options="$options.metricOptions">
       <template slot="search">
         <vue-opti-select-light
           :options="[ { value: 'table1', content: 'Table 1' }, { value: 'table2', content: 'Table 2' } ]"
           class="col-sm-3"
           v-model="tableSelect"
           placeholder="Tables"
-          :default="['table1']">
+          :value="['table1']">
         </vue-opti-select-light>
       </template>
       <template slot="email" slot-scope="props">
@@ -126,9 +128,26 @@ export default {
 
     $_handleColumnResize(items) {
       localStorage.setItem('fields', JSON.stringify(items));
+    },
+
+    async $_updateCustomMetric(metric) {
+      console.log(metric);
+      // Api call
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(new Error('Simulated Error'));
+        }, 3000)
+      });
     }
   },
   async created() {
+    this.$options.metricOptions = [
+      { group: 'ts', content: 'Impressions', value: 'impressions' },
+      { group: 'ts', content: 'Traffic Source Clicks', value: 'ts_clicks' },
+      { group: 'tr', content: 'Tracker Clicks', value: 'tr_clicks' },
+      { group: 'ts', content: 'Traffic Source Conversions', value: 'ts_conversions' },
+      { group: 'tr', content: 'Tracker Conversions', value: 'tr_conversions' },
+    ];
     this.preloader = true;
     await this.$_loadData({ page: 0, limit: 10 });
     this.preloader = false;

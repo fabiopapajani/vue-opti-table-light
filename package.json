@@ -22,10 +22,12 @@
   },
   "dependencies": {
     "core-js": "^3.6.4",
+    "jquery": "^3.5.1",
     "loadash": "^1.0.0",
+    "mathjs": "^8.0.1",
     "vue": "^2.6.11",
     "vue-json-excel": "^0.2.98",
-    "vue-opti-select-light": "^0.3.5",
+    "vue-opti-select-light": "^0.4.11",
     "vuedraggable": "^2.23.2"
   },
   "files": [
