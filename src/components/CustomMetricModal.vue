@@ -1,55 +1,82 @@
 <template>
-  <b-modal ref="custom-metric-modal" modal-class="custom-metric-modal" title-class="ml-auto" centered @ok.prevent="$_save" @hidden="$_hidden" @shown="$_shown" size="lg" title="Custom Metric" ok-title="Apply" body-class="py-0" :busy="modalBusy" no-close-on-backdrop :no-close-on-esc="modalBusy">
-    <template #modal-header="{ close }">
+  <b-modal
+    ref="custom-metric-modal"
+    modal-class="optimizer-modal custom-metric-modal"
+    title-class="ml-auto"
+    centered
+    @hidden="$_hidden"
+    @shown="$_shown"
+    size="lg"
+    body-class="py-0" :busy="modalBusy"
+    no-close-on-backdrop
+    :no-close-on-esc="modalBusy"
+  >
+    <!-- Modal Header -->
+    <template slot="modal-header">
+      <h2 class="modal-header__title">Custom Metric</h2>
+      <svg class="modal-header__close-icon" @click="$_closeModal" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1L13 13" stroke="#546582" stroke-width="2" stroke-linecap="round" />
+        <path d="M13 1L1 13" stroke="#546582" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    </template>
+
+    <!-- <template #modal-header="{ close }">
       <h5 class="modal-title ml-auto">Custom Metric</h5>
       <button :disabled="modalBusy" type="button" aria-label="Close" class="close" @click="close">x</button>
-    </template>
-    <template #modal-ok>
+    </template> -->
+
+    <!-- <template #modal-ok>
       <template v-if="modalBusy"> <i class="fa fa-spinner fa-spin"></i></template>
       Apply
-    </template>
-    <b-form>
+    </template> -->
+    <b-form class="custom-metric-form">
       <!-- Custom Error -->
       <b-alert variant="danger" dismissible :show="!!customErrorMessage" @dismissed="customErrorMessage = ''" class="mt-2">{{ customErrorMessage }}</b-alert>
 
       <!-- Name -->
       <b-form-group
         label="Column Name"
-        label-for="custom-metric-name"
+        class="optimizer-form-group"
         invalid-feedback="Column Name is required"
         :state="$c_nameState"
       >
-        <b-form-input id="custom-metric-name" v-model="form.name" :state="$c_nameState" trim></b-form-input>
+        <b-form-input
+          id="custom-metric-name"
+          class="optimizer-form-input mb-2"
+          v-model="form.name"
+          trim
+        >
+        </b-form-input>
       </b-form-group>
 
       <!-- Format -->
       <b-form-group
         label="Format"
-        label-for="custom-metric-format"
+        class="optimizer-form-group"
       >
-      <div class="row">
-        <vue-opti-select-light 
-          id="custom-metric-format"
-          class="col-md-2 col-sm-12 optimizer-select"
-          :options="$options.formatOptions"
-          button-placeholder="Select format"
-          @change="({ value }) => { form.format = value }"
-          :value="form.format"
-          single
-        />
-      </div>
+        <div class="row">
+          <vue-opti-select-light
+            id="custom-metric-format"
+            class="col-md-4 optimizer-select mb-2"
+            :options="$options.formatOptions"
+            button-placeholder="Select format"
+            @change="({ value }) => { form.format = value }"
+            :value="form.format"
+            single
+          />
+        </div>
       </b-form-group>
 
       <!-- Formula -->
       <b-form-group
         label="Formula"
-        label-for="custom-metric-formula"
         invalid-feedback="Invalid Formula"
         :state="validFormula"
+        class="optimizer-form-group"
       >
-        <vue-opti-select-light 
+        <vue-opti-select-light
           id="custom-metric-formula"
-          class="optimizer-select mr-2 d-inline-block"
+          class="optimizer-select d-inline-block w-50 mr-4"
           :options="customMetricOptions"
           :groups="$options.metricGroupOptions"
           @click="$_addMetric"
@@ -58,11 +85,22 @@
           prevent
           searchable
         />
-        <b-btn size="sm" class="mr-2" v-for="operator in $options.operatorOptions" :key="`${operator}`" @click="$_addOperator(operator)">{{operator}}</b-btn>
-        <b-btn size="sm" variant="link" @click="$_clearFormula">Clear</b-btn>
-        <div ref="formulaInput" class="formula-input col-md-12 mt-2" aria-placeholder="Enter formula here" tabindex="0" @focus="validFormula = null"></div>
+        <div class="custom-metric-formula-wrapper">
+          <div class="custom-metric-formula-operators">
+            <b-btn size="sm" class="mr-2" v-for="operator in $options.operatorOptions" :key="`${operator}`" @click="$_addOperator(operator)"><span>{{ operator }}</span></b-btn>
+          </div>
+          <b-btn size="sm" variant="link" class="clear-btn" @click="$_clearFormula">Clear</b-btn>
+        </div>
+        <div ref="formulaInput" class="formula-input col-md-12" aria-placeholder="Enter formula here" tabindex="0" @focus="validFormula = null"></div>
       </b-form-group>
     </b-form>
+
+    <!-- Modal Footer -->
+    <template slot="modal-footer">
+      <b-btn :disabled="modalBusy" class="secondary-button" @click="$_closeModal">Cancel</b-btn>
+      <b-btn :disabled="modalBusy" class="primary-button" @click.prevent="$_save">
+        <template v-if="modalBusy"><i class="fa fa-spinner fa-spin mr-2"></i> </template>Save</b-btn>
+    </template>
   </b-modal>
 </template>
 
@@ -89,13 +127,18 @@ export default {
       validFormula: null,
       customErrorMessage: '',
       modalBusy: false,
-    }
+    };
+  },
+  computed: {
+    $c_nameState() {
+      return this.form.name === null ? null : !!this.form.name;
+    },
   },
   created() {
     this.$options.formatOptions = [
       { content: 'Number', value: 'number' },
       { content: 'Percentage', value: 'percentage' },
-      { content: 'Currency', value: 'currency' }
+      { content: 'Currency', value: 'currency' },
     ];
     this.$options.operatorOptions = ['+', '-', 'x', '/', '(', ')'];
 
@@ -105,12 +148,6 @@ export default {
       { value: 'ga', content: 'Google Analytics Fields' },
       { value: 'cc', content: 'Custom Conversions Fields' },
     ];
-
-  },
-  computed: {
-    $c_nameState() {
-      return this.form.name === null ? null : !!this.form.name
-    }
   },
   methods: {
     show(columnItem) {
@@ -148,11 +185,11 @@ export default {
           await this.submit(JSON.parse(JSON.stringify(this.form)));
           this.hide();
         } catch (error) {
-          console.log(error)
+          console.log(error);
           try {
             this.customErrorMessage = error.message;
           } catch (err) {
-            this.customErrorMessage = 'An error occurred!'
+            this.customErrorMessage = 'An error occurred!';
           }
         }
         this.modalBusy = false;
@@ -179,53 +216,113 @@ export default {
       this.formulaModel.clear();
       this.$refs.formulaInput.focus();
     },
-  }
-}
+    $_closeModal() {
+      this.hide();
+      this.$_hidden();
+    },
+  },
+};
 </script>
 
 <style lang="scss">
 .custom-metric-modal {
-  .formula-input {
-    border: 1px solid #ced4da;
-    letter-spacing: 2px;
-    min-height: 40px;
-    &:focus {
-      .formula-input-node.active:after {
-        content: "";
-        width: 1px;
-        height: calc( 100% - 14px );
-        position: absolute;
-        right: 0px;
-        top: 7px;
-        background: #000;
-        animation: blink 1s infinite;
+  .custom-metric-form {
+    padding: 2rem 0;
+
+    .optimizer-form-group {
+      &.is-invalid {
+        input {
+          border-color: #dc3545;
+        }
       }
     }
-    .formula-input-node {
-      position: relative;
-      display: inline-block;
-      padding: 7px 4px;
-      &.number {
-        padding: 7px 0px;
-      }
-      &.token {
-        padding: 7px 6px;
-      }
-      .input-token {
-        display: inline-block;
-        letter-spacing: 0;
-        .input-token-container {
-          background-color: #f5c15b;
-          border-radius: 5px;
-          display: inline-block;
-          .input-token-label {
-            padding: 0 5px;
+
+    .custom-metric-formula-wrapper {
+      display: inline-flex;
+      align-items: center;
+      width: calc(50% - 1.5rem);
+      justify-content: space-between;
+
+      .custom-metric-formula-operators {
+        button {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          width: 33px;
+          height: 32px;
+          border-radius: .5rem;
+          background: #6c757d;
+          border-color: #6c757d;
+
+          &:nth-of-type(1) { font-size: 22px }
+          &:nth-of-type(2) { font-size: 35px }
+          &:nth-of-type(3) { font-size: 19px }
+          &:nth-of-type(4) { font-size: 17px }
+          &:nth-of-type(5) { font-size: 16px }
+          &:nth-of-type(6) { font-size: 16px }
+
+          span {
+            margin-top: 0rem;
           }
-          .input-token-remove {
-            margin-right: 2px;
-            position: relative;
-            left: -2px;
-            cursor: pointer;
+        }
+      }
+
+      .clear-btn {
+        font-size: 15px;
+      }
+    }
+
+    .formula-input {
+      border: 1px solid #ced4da;
+      border-radius: .5rem;
+      letter-spacing: 2px;
+      min-height: 40px;
+      margin-top: 1.5rem;
+      cursor: text;
+
+      &:focus {
+        .formula-input-node.active:after {
+          content: "";
+          width: 1px;
+          height: calc( 100% - 14px );
+          position: absolute;
+          right: 0px;
+          top: 7px;
+          background: #000;
+          animation: blink 1s infinite;
+        }
+      }
+      .formula-input-node {
+        position: relative;
+        display: inline-block;
+        padding: 7px 4px;
+        &.number {
+          padding: 7px 0px;
+        }
+        &.token {
+          padding: 7px 6px;
+        }
+        .input-token {
+          display: inline-block;
+          letter-spacing: 0;
+
+          .input-token-container {
+            background-color: #f5c15b;
+            border-radius: 5px;
+            padding: 0 .7rem;
+            display: inline-block;
+
+            .input-token-label {
+              font-size: 15px;
+              padding: 0 5px;
+            }
+            .input-token-remove {
+              margin-right: 2px;
+              position: relative;
+              left: -2px;
+              cursor: pointer;
+            }
           }
         }
       }
