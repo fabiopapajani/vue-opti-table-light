@@ -114,11 +114,12 @@ class FormulaModel {
     let formula = formulaArray.join(' ');
     // eslint-disable-next-line no-useless-escape
     const findFormulaStaticNumbers = formula.match(/\d[\s\.\d]+/g);
-    findFormulaStaticNumbers.forEach((strMatch) => {
-      const strMatchSpaceLess = strMatch.replace(/ +/g, '');
-      formula = formula.replace(strMatch, strMatchSpaceLess);
-    });
-
+    if (findFormulaStaticNumbers) {
+      findFormulaStaticNumbers.forEach((strMatch) => {
+        const strMatchSpaceLess = strMatch.replace(/ +/g, '');
+        formula = formula.replace(strMatch, strMatchSpaceLess);
+      });
+    }
     // Validate
     try {
       parse(formula);
@@ -131,10 +132,12 @@ class FormulaModel {
   setFormula(formula = '') {
     // eslint-disable-next-line no-useless-escape
     const findFormulaStaticNumbers = formula.match(/\d[\s\.\d]+/g);
-    findFormulaStaticNumbers.forEach((strMatch) => {
-      const strMatchSpaceDelimit = strMatch.split('').join(' ')
-      formula = formula.replace(strMatch, strMatchSpaceDelimit);
-    });
+    if (findFormulaStaticNumbers) {
+      findFormulaStaticNumbers.forEach((strMatch) => {
+        const strMatchSpaceDelimit = strMatch.split('').join(' ')
+        formula = formula.replace(strMatch, strMatchSpaceDelimit);
+      });
+    }
     const formulaArray = formula.split(' ');
     formulaArray.forEach((node) => {
       if (node !== ' ') {
