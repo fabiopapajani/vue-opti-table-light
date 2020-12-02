@@ -8,8 +8,8 @@ const allowedKeyCodes = {
   'ArrowRight': { value: 'ArrowRight', type: 'control' },
   '+': { value: '+', type: 'operator' },
   '-': { value: '-', type: 'operator' },
-  '*': { value: 'x', type: 'operator' },
-  'x': { value: 'x', type: 'operator' },
+  '*': { value: '*', type: 'operator' },
+  'x': { value: '*', type: 'operator' },
   '/': { value: '/', type: 'operator' },
   '(': { value: '(', type: 'operator' },
   ')': { value: ')', type: 'operator' },
@@ -76,6 +76,13 @@ class FormulaModel {
         }
       }
     });
+  }
+
+  addOperatorInput(value) {
+    const operator = allowedKeyCodes[value];
+    if (operator) {
+      this._insertNode(operator.value, 'operator', operator.value);
+    }
   }
 
   addOperator(operator) {

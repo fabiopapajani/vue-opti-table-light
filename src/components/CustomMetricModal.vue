@@ -209,7 +209,7 @@ export default {
       this.$refs.formulaInput.focus();
     },
     $_addOperator(operator) {
-      this.formulaModel.addOperator(operator);
+      this.formulaModel.addOperatorInput(operator);
       this.$refs.formulaInput.focus();
     },
     $_clearFormula() {
