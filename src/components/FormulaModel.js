@@ -32,6 +32,10 @@ class FormulaModel {
     this.el = $(el);
     this.tokensMap = {};
     tokens.forEach((token) => { this.tokensMap[token.value] = token; });
+    // Regex for number greater than 9 and with precision
+    // eslint-disable-next-line no-useless-escape
+    this.regexStaticCustomNumber = new RegExp(/\d[\s\.\d]*\d/g);
+    
     this._insertNode('&fnof;=', 'active key');
     // Set active node on click
     this.el.on('click', () => {
@@ -120,7 +124,7 @@ class FormulaModel {
     });
     let formula = formulaArray.join(' ');
     // eslint-disable-next-line no-useless-escape
-    const findFormulaStaticNumbers = formula.match(/\d[\s\.\d]+/g);
+    const findFormulaStaticNumbers = formula.match(this.regexStaticCustomNumber);
     if (findFormulaStaticNumbers) {
       findFormulaStaticNumbers.forEach((strMatch) => {
         const strMatchSpaceLess = strMatch.replace(/ +/g, '');
@@ -129,16 +133,33 @@ class FormulaModel {
     }
     // Validate
     try {
+      const explodeFormula = formula.split(' ');
+      explodeFormula.forEach((value, index) => {
+        // Is token
+        if (this.tokensMap[value]) {
+          // Prev
+          if (index > 0) {
+            const prevValue = explodeFormula[index - 1];
+            if (!isNaN(prevValue) || this.tokensMap[prevValue]) throw new Error('Invalid formula');
+          }
+
+          // Next
+          if ((index + 1) < explodeFormula.length) {
+            const nextValue = explodeFormula[index + 1];
+            if (!isNaN(nextValue) || this.tokensMap[nextValue]) throw new Error('Invalid formula');
+          }
+        }
+      });
       parse(formula);
       return formula;
     } catch (err) {
-      throw new Error('Invalid formula');
+      throw new Error(err.message || 'Invalid formula');
     }
   }
 
   setFormula(formula = '') {
     // eslint-disable-next-line no-useless-escape
-    const findFormulaStaticNumbers = formula.match(/\d[\s\.\d]+/g);
+    const findFormulaStaticNumbers = formula.match(this.regexStaticCustomNumber);
     if (findFormulaStaticNumbers) {
       findFormulaStaticNumbers.forEach((strMatch) => {
         const strMatchSpaceDelimit = strMatch.split('').join(' ')
