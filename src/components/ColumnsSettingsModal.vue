@@ -68,7 +68,7 @@
         </b-list-group>
       </div>
     </div>
-    <custom-metric-modal ref="customMetricModal" @hidden="hideModal = false" :submit="$_updateCustomMetric" :custom-metric-options="customMetricOptions" />
+    <custom-metric-modal ref="customMetricModal" @hidden="hideModal = false" :submit="$_updateCustomMetric" :custom-metric-options="customMetricOptions" :metric-group-options="metricGroupOptions" />
   </b-modal>
 </template>
 
@@ -84,6 +84,7 @@ export default {
     value: { type: Array, default: () => [] },
     updateCustomMetric: { type: Function, default: () => {} },
     customMetricOptions: { type: Array, default: () => [] },
+    metricGroupOptions: { type: Array, default: () => [] },
   },
   data() {
     return {

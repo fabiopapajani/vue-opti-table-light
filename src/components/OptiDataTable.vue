@@ -270,7 +270,7 @@
     <div class="row" v-if="$slots['bottom']">
       <slot name="bottom"></slot>
     </div>
-    <columns-settings-modal ref="columnsSettingsModal" v-model="localHeaderFields" @save="$_saveSettings" :update-custom-metric="updateCustomMetric" :custom-metric-options="customMetricOptions" />
+    <columns-settings-modal ref="columnsSettingsModal" v-model="localHeaderFields" @save="$_saveSettings" :update-custom-metric="updateCustomMetric" :custom-metric-options="customMetricOptions" :metric-group-options="metricGroupOptions" />
   </div>
 </template>
 

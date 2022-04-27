@@ -78,7 +78,7 @@
           id="custom-metric-formula"
           class="optimizer-select d-inline-block w-50 mr-4"
           :options="customMetricOptions"
-          :groups="$options.metricGroupOptions"
+          :groups="metricGroupOptions"
           @click="$_addMetric"
           button-placeholder="Add metric"
           single
@@ -114,6 +114,12 @@ export default {
   props: {
     submit: { type: Function, default: () => {} },
     customMetricOptions: { type: Array, default: () => [] },
+    metricGroupOptions: { type: Array, default: () => [
+      { value: 'tr', content: 'Trackers Fields' },
+      { value: 'ts', content: 'Traffic Sources Fields' },
+      { value: 'ga', content: 'Google Analytics Fields' },
+      { value: 'cc', content: 'Custom Conversions Fields' },
+    ] }
   },
   data() {
     return {
@@ -141,13 +147,6 @@ export default {
       { content: 'Currency', value: 'currency' },
     ];
     this.$options.operatorOptions = ['+', '-', 'x', '/', '(', ')'];
-
-    this.$options.metricGroupOptions = [
-      { value: 'tr', content: 'Trackers Fields' },
-      { value: 'ts', content: 'Traffic Sources Fields' },
-      { value: 'ga', content: 'Google Analytics Fields' },
-      { value: 'cc', content: 'Custom Conversions Fields' },
-    ];
   },
   methods: {
     show(columnItem) {

@@ -31,4 +31,5 @@ export default {
   columnFilterReset: { type: Boolean, default: true },
   updateCustomMetric: { type: Function, default: () => {} },
   customMetricOptions: { type: Array, default: () => [] },
+  metricGroupOptions: { type: Array, default: () => [] }
 };
