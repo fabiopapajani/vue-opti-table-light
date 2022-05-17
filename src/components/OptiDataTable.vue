@@ -201,7 +201,10 @@
 
       </vue-opti-select-light>
       <div class="col-md-auto d-flex mb-2 mb-md-0" v-if="enableExport">
-        <template v-if="serverSidePagination">
+        <template v-if="$slots['export']">
+          <slot name="export"></slot>
+        </template>
+        <template v-else-if="serverSidePagination">
           <download-excel
             class="btn btn-secondary pointer-button btn-export-csv"
             :fields="$c_exportTable"
