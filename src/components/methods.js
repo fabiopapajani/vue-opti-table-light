@@ -166,4 +166,14 @@ export default {
     document.removeEventListener('mousemove', this.$_handleMouseMove);
     document.removeEventListener('mouseup', this.$_handleMouseUp);
   },
+
+  // Handle Download Excel
+  $_downloadXls() {
+    this.$refs['xls-button'].generate();
+  },
+
+  // Handle Download CSV
+  $_downloadCsv() {
+    this.$refs['csv-button'].generate();
+  }
 };

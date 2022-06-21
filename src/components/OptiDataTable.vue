@@ -201,12 +201,12 @@
 
       </vue-opti-select-light>
       <div class="col-md-auto d-flex mb-2 mb-md-0" v-if="enableExport">
-        <template v-if="$slots['export']">
-          <slot name="export"></slot>
-        </template>
-        <template v-else-if="serverSidePagination">
+        <slot :xlsDownloadLoading="xlsDownloadLoading" :csvDownloadLoadig="csvDownloadLoading" :downloadXls="$_downloadXls" :downloadCsv="$_downloadCsv" name="export"></slot>
+        <template v-if="serverSidePagination">
           <download-excel
+            ref="csv-button"
             class="btn btn-secondary pointer-button btn-export-csv"
+            :class="[ !!$scopedSlots['export']? 'd-none': '' ]"
             :fields="$c_exportTable"
             type="csv"
             :name="`${exportLabel}.csv`"
@@ -216,8 +216,10 @@
             <span v-if="csvDownloadLoading">Downloading  <i class="fa fa-spinner fa-spin" aria-hidden="true"></i></span>
             <span v-else>Download CSV</span>
           </download-excel>
-          <download-excel
-            class="btn btn-secondary pointer-button btn-export-xls ml-3"
+          <download-excel 
+            ref="xls-button"
+            class="btn btn-secondary pointer-button btn-export-xls ml-3 display"
+            :class="[ !!$scopedSlots['export']? 'd-none': '' ]"
             :fields="$c_exportTable"
             type="xls"
             :name="`${exportLabel}.xls`"
@@ -226,11 +228,15 @@
             :before-finish="() => { xlsDownloadLoading = false }">
             <span v-if="xlsDownloadLoading">Downloading  <i class="fa fa-spinner fa-spin" aria-hidden="true"></i></span>
             <span v-else>Download Excel</span>
+
           </download-excel>
         </template>
         <template v-else>
           <download-excel
+            hidden
+            ref="csv-button"
             class="btn btn-secondary pointer-button"
+            :class="[ !!$scopedSlots['export']? 'd-none': '' ]"
             :data="items"
             :fields="$c_exportTable"
             type="csv"
@@ -238,13 +244,16 @@
             Download CSV
           </download-excel>
           <download-excel
+            ref="xls-button"
             class="btn btn-secondary pointer-button ml-3"
+            :class="[ !!$scopedSlots['export']? 'd-none': '' ]"
             :data="items"
             :fields="$c_exportTable"
             type="xls"
             :name="`${exportLabel}.xls`">
             Download Excel
           </download-excel>
+          
         </template>
       </div>
       <div class="col-md-4 col-sm-12 ml-md-auto">
@@ -362,6 +371,8 @@ export default {
       to.forEach(el => { el.scrollLeft = from.scrollLeft; });
       areScrolling = 0;
     };
+              console.log(this)
+
 
     if (this.sticky) {
       let onScrollBottom = true;
@@ -409,6 +420,7 @@ export default {
           enableOnScrollTop();
         }
       }
+
       // tableTop.onscroll = () => onScrollFn(tableTop, [tableWraper]);
       // tableWraper.onscroll = () => onScrollFn(tableWraper, [tableTop]);
       // const scrollObserver = new ResizeObserver(() => {
