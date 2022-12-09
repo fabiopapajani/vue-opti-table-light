@@ -371,8 +371,6 @@ export default {
       to.forEach(el => { el.scrollLeft = from.scrollLeft; });
       areScrolling = 0;
     };
-              console.log(this)
-
 
     if (this.sticky) {
       let onScrollBottom = true;

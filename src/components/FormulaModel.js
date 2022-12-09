@@ -34,8 +34,8 @@ class FormulaModel {
     tokens.forEach((token) => { this.tokensMap[token.value] = token; });
     // Regex for number greater than 9 and with precision
     // eslint-disable-next-line no-useless-escape
-    this.regexStaticCustomNumber = new RegExp(/\d[\s\.\d]*\d/g);
-    
+    this.regexStaticCustomNumber = new RegExp(/(?<!\w)\d[\s\.\d]*\d/g);
+
     this._insertNode('&fnof;=', 'active key');
     // Set active node on click
     this.el.on('click', () => {
