@@ -34,7 +34,7 @@ class FormulaModel {
     tokens.forEach((token) => { this.tokensMap[token.value] = token; });
     // Regex for number greater than 9 and with precision
     // eslint-disable-next-line no-useless-escape
-    this.regexStaticCustomNumber = new RegExp(/(?<!\w)\d[\s\.\d]*\d/g);
+    this.regexStaticCustomNumber = new RegExp(/\d[\s\.\d]*\d/g);
 
     this._insertNode('&fnof;=', 'active key');
     // Set active node on click
@@ -160,12 +160,18 @@ class FormulaModel {
   setFormula(formula = '') {
     // eslint-disable-next-line no-useless-escape
     const findFormulaStaticNumbers = formula.match(this.regexStaticCustomNumber);
+
     if (findFormulaStaticNumbers) {
       findFormulaStaticNumbers.forEach((strMatch) => {
         const strMatchSpaceDelimit = strMatch.split('').join(' ')
+        const foundIndex = formula.indexOf(strMatch);
+        if(formula[foundIndex-1].match(/\w/)) {
+          return
+        }
         formula = formula.replace(strMatch, strMatchSpaceDelimit);
       });
     }
+
     const formulaArray = formula.split(' ');
     formulaArray.forEach((node) => {
       if (node !== ' ') {
