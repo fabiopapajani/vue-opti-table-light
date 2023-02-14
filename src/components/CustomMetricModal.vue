@@ -59,7 +59,7 @@
             <div class="row">
               <vue-opti-select-light
                 id="custom-metric-format"
-                class="col-md-4 optimizer-select mb-2"
+                class="col-lg-5 optimizer-select mb-2"
                 :options="$options.formatOptions"
                 button-placeholder="Select format"
                 @change="({ value }) => { form.format = value }"
@@ -78,7 +78,7 @@
             <div class="row">
               <vue-opti-select-light
                 id="custom-metric-precision"
-                class="col-md-4 optimizer-select"
+                class="col-lg-5 optimizer-select"
                 :options="$options.precisionOptions"
                 button-placeholder="Select precision"
                 @change="({ value }) => { form.precision = value }"
