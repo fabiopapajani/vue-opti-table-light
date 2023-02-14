@@ -49,23 +49,46 @@
         </b-form-input>
       </b-form-group>
 
-      <!-- Format -->
-      <b-form-group
-        label="Format"
-        class="optimizer-form-group"
-      >
-        <div class="row">
-          <vue-opti-select-light
-            id="custom-metric-format"
-            class="col-md-4 optimizer-select mb-2"
-            :options="$options.formatOptions"
-            button-placeholder="Select format"
-            @change="({ value }) => { form.format = value }"
-            :value="form.format"
-            single
-          />
+      <b-row>
+        <div class="col-md-6">
+          <!-- Format -->
+          <b-form-group
+            label="Format"
+            class="optimizer-form-group"
+          >
+            <div class="row">
+              <vue-opti-select-light
+                id="custom-metric-format"
+                class="col-md-4 optimizer-select mb-2"
+                :options="$options.formatOptions"
+                button-placeholder="Select format"
+                @change="({ value }) => { form.format = value }"
+                :value="form.format"
+                single
+              />
+            </div>
+          </b-form-group>
         </div>
-      </b-form-group>
+        <div class="col-md-6">
+          <!-- Format -->
+          <b-form-group
+            label="Precision"
+            class="optimizer-form-group"
+          >
+            <div class="row">
+              <vue-opti-select-light
+                id="custom-metric-precision"
+                class="col-md-4 optimizer-select"
+                :options="$options.precisionOptions"
+                button-placeholder="Select precision"
+                @change="({ value }) => { form.precision = value }"
+                :value="form.precision"
+                single
+              />
+            </div>
+          </b-form-group>
+        </div>
+      </b-row>
 
       <!-- Formula -->
       <b-form-group
@@ -108,6 +131,9 @@
 import { VueOptiSelectLight } from 'vue-opti-select-light';
 import FormulaModel from './FormulaModel';
 
+const DEFAULT_FORMAT = 'number';
+const DEFAULT_PRECISION = 3;
+
 export default {
   name: 'CustomMetricModal',
   components: { VueOptiSelectLight },
@@ -126,7 +152,8 @@ export default {
       form: {
         key: '',
         name: null,
-        format: 'number',
+        format: DEFAULT_FORMAT,
+        precision: DEFAULT_PRECISION,
         formula: '',
       },
       formulaModel: null,
@@ -146,6 +173,14 @@ export default {
       { content: 'Percentage', value: 'percentage' },
       { content: 'Currency', value: 'currency' },
     ];
+    this.$options.precisionOptions = [
+      { content: '1', value: 0 },
+      { content: '0.1', value: 1 },
+      { content: '0.01', value: 2 },
+      { content: '0.001', value: 3 },
+      { content: '0.0001', value: 4 },
+      { content: '0.00001', value: 5 },
+    ]
     this.$options.operatorOptions = ['+', '-', 'x', '/', '(', ')'];
   },
   methods: {
@@ -160,7 +195,8 @@ export default {
     reset() {
       this.form.key = '';
       this.form.name = null;
-      this.form.format = 'number';
+      this.form.format = DEFAULT_FORMAT;
+      this.form.precision = DEFAULT_PRECISION;
       this.form.formula = '';
       this.formulaModel = null;
       this.validFormula = null;
