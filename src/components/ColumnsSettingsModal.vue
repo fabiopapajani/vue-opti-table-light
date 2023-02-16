@@ -149,7 +149,10 @@ export default {
       try {
         const columnItem = { key: column.item.key, formula: column.customMetric || '' };
         columnItem.name = typeof column.header.content === 'function' ? column.header.content() : column.header.content;
-        if (column.options && column.options.format) columnItem.format = column.options.format;
+        if (column.options) {
+          if (column.options.format) columnItem.format = column.options.format;
+          if (column.options.precision) columnItem.precision = column.options.precision;
+        }
         this.$refs.customMetricModal.show(columnItem);
         this.hideModal = true;
       } catch (err) {
@@ -162,7 +165,7 @@ export default {
       } catch (err) { /* Do Nothing */ }
     },
     async $_resetCustomMetric(column) {
-      const metric = { key: column.item.key, name: `${column.item.key.charAt(0).toUpperCase() + column.item.key.slice(1)}`, formula: '', format: 'number' };
+      const metric = { key: column.item.key, name: `${column.item.key.charAt(0).toUpperCase() + column.item.key.slice(1)}`, formula: '', format: 'numeric', precision: 3 };
       await this.$_updateCustomMetric(metric);
       this.$_hideResetPopoever(column);
     },
@@ -175,6 +178,7 @@ export default {
         headerField.customMetric = metric.formula;
         if (!headerField.options) headerField.options = {};
         headerField.options.format = metric.format;
+        headerField.options.precision = metric.precision;
         const model = [...this.model];
         model[headerFieldIndex] = headerField;
         this.$emit('input', model);
