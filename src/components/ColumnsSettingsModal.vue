@@ -151,7 +151,7 @@ export default {
         columnItem.name = typeof column.header.content === 'function' ? column.header.content() : column.header.content;
         if (column.options) {
           if (column.options.format) columnItem.format = column.options.format;
-          if (column.options.precision) columnItem.precision = column.options.precision;
+          if (column.options.precision && column.options.precision >= 0) columnItem.precision = column.options.precision;
         }
         this.$refs.customMetricModal.show(columnItem);
         this.hideModal = true;
