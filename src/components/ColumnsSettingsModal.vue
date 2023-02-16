@@ -165,7 +165,7 @@ export default {
       } catch (err) { /* Do Nothing */ }
     },
     async $_resetCustomMetric(column) {
-      const metric = { key: column.item.key, name: `${column.item.key.charAt(0).toUpperCase() + column.item.key.slice(1)}`, formula: '', format: 'numeric', precision: 3 };
+      const metric = { key: column.item.key, name: `${column.item.key.charAt(0).toUpperCase() + column.item.key.slice(1)}`, formula: '', format: 'number', precision: 3 };
       await this.$_updateCustomMetric(metric);
       this.$_hideResetPopoever(column);
     },

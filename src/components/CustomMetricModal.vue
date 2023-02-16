@@ -169,7 +169,7 @@ export default {
   },
   created() {
     this.$options.formatOptions = [
-      { content: 'Number', value: 'numeric' },
+      { content: 'Number', value: 'number' },
       { content: 'Percentage', value: 'percentage' },
       { content: 'Currency', value: 'currency' },
     ];
