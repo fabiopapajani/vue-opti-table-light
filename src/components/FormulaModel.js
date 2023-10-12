@@ -151,10 +151,24 @@ class FormulaModel {
         }
       });
       parse(formula);
+      this.validateFormula(formula);
       return formula;
     } catch (err) {
       throw new Error(err.message || 'Invalid formula');
     }
+  }
+
+  validateFormula(formula){
+    if(!formula) throw new Error('Invalid formula');
+    const formulaParsed = parse(formula)
+    // throw if binary operator doesn't have two valid args
+    formulaParsed.traverse(function (node) {
+      if (node.isOperatorNode) {
+        if (node.args.length !== 2) {
+          throw new Error('Invalid formula');
+        }
+      }
+    });
   }
 
   setFormula(formula = '') {
