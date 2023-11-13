@@ -663,6 +663,48 @@ export default {
       }
     }
   }
-  
+}
+
+.large-tooltip .tooltip-inner {
+  max-width: 35rem !important;
+}
+
+.filter-input-tooltip {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 1 !important;
+
+  .tooltip-inner {
+    padding: 8px;
+  }
+
+  .range {
+    border-radius: 4px;
+    background-color: #cecdd0;
+    color: #262626;
+    padding: 2px 4px;
+  }
+
+  .header-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &__title {
+      font-weight:700;
+    }
+
+    &__subtitle {
+      color: #929294;
+    }
+  }
+
+
+  .body-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+  }
 }
 </style>

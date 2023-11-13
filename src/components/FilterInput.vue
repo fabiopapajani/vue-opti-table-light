@@ -1,7 +1,40 @@
 <template>
   <div :class="`regex-filter-wraper ${hasError ? errorClass : ''}`">
-    <i class="fa fa-filter" v-show="inputVal === ''" v-b-tooltip="{ html: true, hover: true, placement: 'top', boundary: 'window', title: '<div class=\'text-left\'>Filter values using <,>,=,<=,>=<br />Examples:<br />Values between 10 and 20: 10<20<br />Values between 10 and 20 (and equal 20): 10<=20<br />Values lower than 20: <20<br />Values lower and equal than 20: <=20<br />Values equal to 30: =30</div>' }" aria-hidden="true"></i>
-    <input type="text" v-model="inputVal" @change="$_onChange" @keyup.enter="$_onEnter">
+  <i
+    class="fa fa-filter"
+    v-show="inputVal === ''"
+    v-b-tooltip="{
+      html: true,
+      customClass: 'large-tooltip filter-input-tooltip',
+      hover: true,
+      placement: 'top',
+      boundary: 'window',
+      title: `
+          <div class='text-left'>
+            <div class='header-container'>
+              <div class='header-container__title'>Filter values using <,>,=,<=,>=</div>
+              <div class='header-container__subtitle'>EXAMPLE</div>
+            </div>
+            <div class='body-container'>
+              <div>Values between 10 and 20: <span class='range'>10<20</span></div>
+              <div>Values between 10 and 20 (and equal 20): <span class='range'>10<=20</span></div>
+              <div>Values lower than 20: <span class='range'><20</span></div>
+              <div>Values lower and equal than 20: <span class='range'><=20</span></div>
+              <div>Values equal to 30: <span class='range'>=30</span></div>
+            </div>
+          </div>
+
+    `,
+    }"
+    aria-hidden="true"
+  />
+
+    <input
+      type="text"
+      v-model="inputVal"
+      @change="$_onChange"
+      @keyup.enter="$_onEnter"
+    />
   </div>
 </template>
 
