@@ -127,7 +127,7 @@
           </tr>
         </thead>
         <tbody>
-        <tr v-for="(item, i) in $c_itemsCurrentPage" :key="$_rowKey(item) || i">
+        <tr v-for="(item, i) in $c_itemsCurrentPage" :key="$_rowKey(item) || i" :class="{'rowSelected': item.$selected && focusSelectedRows}">
           <td v-if="selectable" class="column-checkbox">
             <input type="checkbox" :true-value="true" :false-value="false" :value="item.$selected" v-model="item.$selected" @change="$_selectItem(item)" />
           </td>
