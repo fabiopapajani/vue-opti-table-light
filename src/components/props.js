@@ -32,5 +32,5 @@ export default {
   updateCustomMetric: { type: Function, default: () => {} },
   customMetricOptions: { type: Array, default: () => [] },
   metricGroupOptions: { type: Array, default: () => [] },
-  focusSelectedRows:{type: Boolean, default: false },
+  showTooltipBeforeText:{type: Boolean, default: false },
 };
