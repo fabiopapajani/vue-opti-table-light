@@ -28,9 +28,10 @@ jobs:
         cache: 'npm'
     - run: npm i 
     - run: npm run build-bundle 
+    # Publish package
     - uses: mikeal/merge-release@master
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          DEPLOY_DIR: dist/
+          # DEPLOY_DIR: dist/
           # SRC_PACKAGE_DIR: my/src/package
