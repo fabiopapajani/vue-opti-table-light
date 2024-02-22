@@ -6,7 +6,7 @@
     centered
     @hidden="$_hidden"
     @shown="$_shown"
-    size="lg"
+    size="xl"
     body-class="py-0" :busy="modalBusy"
     no-close-on-backdrop
     :no-close-on-esc="modalBusy"
@@ -34,20 +34,21 @@
       <b-alert variant="danger" dismissible :show="!!customErrorMessage" @dismissed="customErrorMessage = ''" class="mt-2">{{ customErrorMessage }}</b-alert>
 
       <!-- Name -->
-      <b-form-group
-        label="Column Name"
-        class="optimizer-form-group"
-        invalid-feedback="Column Name is required"
-        :state="$c_nameState"
-      >
-        <b-form-input
-          id="custom-metric-name"
-          class="optimizer-form-input mb-2"
-          v-model="form.name"
-          trim
-        >
-        </b-form-input>
-      </b-form-group>
+      <div class="custom-metric-select">
+        <label for="custom-metric-name" class="col-form-label">Select Custom Metric:</label>
+        <vue-opti-select-light
+          id="custom-metric-format"
+          ref="customMetric"
+          class="col-lg-5 optimizer-select mb-2"
+          :options="availableMetrics"
+          button-placeholder="Choose Metric"
+          :labelKey="(option) => option.name"
+          :uniqueKey="(option) => option.key"
+          @change="assignMetric"
+          v-model="form"
+          single
+        />
+      </div>
 
       <b-row>
         <div class="col-md-6">
@@ -160,6 +161,7 @@ export default {
       validFormula: null,
       customErrorMessage: '',
       modalBusy: false,
+      availableMetrics: [],
     };
   },
   computed: {
@@ -184,10 +186,18 @@ export default {
     this.$options.operatorOptions = ['+', '-', 'x', '/', '(', ')'];
   },
   methods: {
-    show(columnItem) {
+    show(options, columnItem) {
       this.reset();
-      Object.assign(this.form, columnItem);
+      if (columnItem) {
+        Object.assign(this.form, columnItem);
+      }
+      this.availableMetrics = options;
       this.$refs['custom-metric-modal'].show();
+    },
+    assignMetric(col) {
+      this.formulaModel.clear();
+      Object.assign(this.form, col);
+      this.formulaModel.setFormula(col.formula);
     },
     hide() {
       this.$refs['custom-metric-modal'].hide();
@@ -261,8 +271,19 @@ export default {
 
 <style lang="scss">
 .custom-metric-modal {
+  .modal-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin: 1rem 0rem;
+  }
   .custom-metric-form {
-    padding: 2rem 0;
+    width: 80%;
+
+    .custom-metric-select {
+      display: flex;
+      align-items: baseline;
+    }
 
     .optimizer-form-group {
       &.is-invalid {
@@ -358,6 +379,36 @@ export default {
               left: -2px;
               cursor: pointer;
             }
+          }
+        }
+      }
+    }
+  }
+  .popular-formulas {
+    width: 30%;
+
+    .formulas {
+      ul {
+        padding: 0;
+        list-style: none;
+
+        li {
+          margin-bottom: 1rem;
+          padding-bottom: .8rem;
+          padding-left: .3rem;
+          border-bottom: 1px solid #ccd0d5;
+          color: #262626;
+          font-size: 13px;
+
+          button {
+            border: none;
+            background-color: transparent;
+            font-size: 15px;
+            color: #505050;
+          }
+
+          &:last-child {
+            border-bottom: none;
           }
         }
       }

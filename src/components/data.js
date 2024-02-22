@@ -26,5 +26,6 @@ export default function () {
     currentHeaderField: undefined,
     currentColumn: {},
     resizeStartOffset: 0,
+    presetName: '',
   };
 }

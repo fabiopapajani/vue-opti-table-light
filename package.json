@@ -25,9 +25,10 @@
     "jquery": "^3.5.1",
     "loadash": "^1.0.0",
     "mathjs": "^8.0.1",
+    "sortablejs": "^1.4.2",
     "vue": "^2.6.11",
     "vue-json-excel": "^0.2.98",
-    "vue-opti-select-light": "^0.4.11",
+    "vue-opti-select-light": "^0.6.5",
     "vuedraggable": "^2.23.2"
   },
   "files": [
