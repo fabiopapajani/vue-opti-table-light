@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [14.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -26,7 +26,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm run build-bundle --if-present
+    - run: npm i 
+    - run: npm run build-bundle 
     - name: NPM Publish
     # You may pin to the exact commit or the version.
     # uses: JS-DevTools/npm-publish@4b07b26a2f6e0a51846e1870223e545bae91c552 
