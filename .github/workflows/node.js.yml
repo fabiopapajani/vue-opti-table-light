@@ -36,13 +36,13 @@ jobs:
   # uses: zakiego/just-git-push@bd8adc135244d713200dd36b27ada4144989dcbd
     - name: Just Git Push
       uses: zakiego/just-git-push@v0.1.0
-        with:
-          USERNAME: "Ari Bot"
-          EMAIL: "ari@paperclicks.net"
-          COMMIT_MESSAGE: "This is an automated commit by GitHub Actions. update version"
-          BRANCH: ${{ github.ref_name }}
-          REPOSITORY: ${{ github.repository }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        USERNAME: "Ari Bot"
+        EMAIL: "ari@paperclicks.net"
+        COMMIT_MESSAGE: "This is an automated commit by GitHub Actions. update version"
+        BRANCH: ${{ github.ref_name }}
+        REPOSITORY: ${{ github.repository }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
     # Publish package
     - name: NPM Publish
