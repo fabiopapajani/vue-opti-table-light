@@ -26,9 +26,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: npm version minor -m "[skip ci] %s"
     - run: npm i 
     - run: npm run build-bundle 
-    - run: npm version minor -m "[skip ci] %s"
     # COMMIT VERSION
   # You may pin to the exact commit or the version.
   # uses: zakiego/just-git-push@bd8adc135244d713200dd36b27ada4144989dcbd
