@@ -64,7 +64,7 @@
                   <span v-else-if="typeof col.header.content == 'function'" v-html="col.header.content()"></span>
                   <span v-else-if="typeof col.header.content != 'function'" v-html="col.header.content"></span>
                   <i v-if="col.header.info && !showTooltipBeforeText"
-                    v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window' }"
+                    v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window', customClass: col.header.customClass }"
                     class="fa fa-info-circle info-icon"></i>
                 </div>
                 <!--DROPDOWN FILTERS-->
@@ -113,7 +113,7 @@
                     <span v-else-if="typeof col.header.content == 'function'" v-html="col.header.content()"></span>
                     <span v-else-if="typeof col.header.content != 'function'" v-html="col.header.content"></span>
                     <i v-if="col.header.info"
-                      v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window' }"
+                      v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window', customClass: col.header.customClass }"
                       class="fa fa-info-circle info-icon"></i>
                   </div>
                   <!--DROPDOWN FILTERS-->
