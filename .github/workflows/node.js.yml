@@ -34,16 +34,19 @@ jobs:
     # COMMIT VERSION
   # You may pin to the exact commit or the version.
   # uses: zakiego/just-git-push@bd8adc135244d713200dd36b27ada4144989dcbd
-    - name: Just Git Push
-      uses: zakiego/just-git-push@v0.1.0
-      with:
-        USERNAME: "Ari Bot"
-        EMAIL: "ari@paperclicks.net"
-        COMMIT_MESSAGE: "This is an automated commit by GitHub Actions. update version"
-        BRANCH: ${{ github.ref_name }}
-        REPOSITORY: ${{ github.repository }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+    # - name: Just Git Push
+    #   uses: zakiego/just-git-push@v0.1.0
+    #   with:
+    #     USERNAME: "Ari Bot"
+    #     EMAIL: "ari@paperclicks.net"
+    #     COMMIT_MESSAGE: "This is an automated commit by GitHub Actions. update version"
+    #     BRANCH: ${{ github.ref_name }}
+    #     REPOSITORY: ${{ github.repository }}
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Git Commit/Push Changes
+  # You may pin to the exact commit or the version.
+  # uses: actions-x/commit@803b20e5b72c0425eb7919c42c321e67c5bc5d2d
+      uses: actions-x/commit@v6
     # Publish package
     - name: NPM Publish
     # You may pin to the exact commit or the version.
