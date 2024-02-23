@@ -1,5 +1,5 @@
 <template>
-  <b-modal :modal-class="[{ 'd-none': hideModal }, 'columns-settings-modal']" title-class="ml-auto" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" :size="$c_modalSize" title="Columns settings" ok-title="Apply" body-class="py-0">
+  <b-modal :modal-class="[{ 'd-none': hideModal }, 'columns-settings-modal']" title-class="ml-auto" ref="columnSettings" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" :size="$c_modalSize" title="Columns settings" ok-title="Apply" body-class="py-0">
     <template #modal-header>
       <vue-opti-select-light
         class="optimizer-select"
@@ -11,9 +11,7 @@
       />
       <h4>Columns settings</h4>
       <button class="header-btn" @click="hide">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-          <path fill="currentColor" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6l-5.6 5.6Z"/>
-        </svg>
+        <img src="static/Close.svg" alt="Close Icon">
       </button>
     </template>
     <div class="row">
@@ -47,6 +45,8 @@
               :selectAllItemsOfGroup="$_selectAllItemsOfGroup"
               :editCustomMetric="$_editCustomMetric"
               :parseInfo="$_parseInfo"
+              :resetCustomMetricLoading="resetCustomMetricLoading"
+              :updateCustomMetric="$_updateCustomMetric"
             />
           </b-list-group-item>
         </b-list-group>
@@ -81,30 +81,13 @@
             >
               <div class="p-0 sortable-item" v-for="(col, index) in model" v-show="col.display" :key="`item-${index}`">
                   <span>
-                    <svg v-if="selectedColumnType === 'order'" style="cursor: default" @click="$_removeSelectedColumn(col)" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none">
-                      <path
-                        d="M13 3.00004L3 13M2.99996 3L12.9999 13"
-                        stroke="#262626"
-                        stroke-linecap="round"
-                      />
-                    </svg>
-                    <input :checked="col.item.enableComparison" :disabled="col.options.format === 'string'" @change="$_makeComparable(col)" type="checkbox" class="mr-1" v-if="selectedColumnType === 'compare'" />
+                    <button class="clean-btn" v-if="selectedColumnType === 'order'" @click="$_removeSelectedColumn(col)">
+                      <img  v-if="selectedColumnType === 'order'" src="static/Close.svg" class="mb-1" alt="Close Icon">
+                    </button>
+                    <input :checked="col.item.comparable" :disabled="col.options.format === 'string'" @change="$_makeComparable(col)" type="checkbox" class="mr-1" v-if="selectedColumnType === 'compare'" />
                     {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
                   </span>
-                  <svg v-if="selectedColumnType === 'order'" style="cursor: grab" class="draggable_icon pull-right mt-1" width="10px" height="14px" viewBox="0 0 10 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                      <g id="Outlined" transform="translate(-617.000000, -246.000000)">
-                        <g id="Action" transform="translate(100.000000, 100.000000)">
-                          <g id="Outlined-/-Action-/-drag_indicator" transform="translate(510.000000, 142.000000)">
-                            <g>
-                              <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
-                              <path d="M11,18 C11,19.1 10.1,20 9,20 C7.9,20 7,19.1 7,18 C7,16.9 7.9,16 9,16 C10.1,16 11,16.9 11,18 Z M9,10 C7.9,10 7,10.9 7,12 C7,13.1 7.9,14 9,14 C10.1,14 11,13.1 11,12 C11,10.9 10.1,10 9,10 Z M9,4 C7.9,4 7,4.9 7,6 C7,7.1 7.9,8 9,8 C10.1,8 11,7.1 11,6 C11,4.9 10.1,4 9,4 Z M15,8 C16.1,8 17,7.1 17,6 C17,4.9 16.1,4 15,4 C13.9,4 13,4.9 13,6 C13,7.1 13.9,8 15,8 Z M15,10 C13.9,10 13,10.9 13,12 C13,13.1 13.9,14 15,14 C16.1,14 17,13.1 17,12 C17,10.9 16.1,10 15,10 Z M15,16 C13.9,16 13,16.9 13,18 C13,19.1 13.9,20 15,20 C16.1,20 17,19.1 17,18 C17,16.9 16.1,16 15,16 Z" id="🔹-Icon-Color" fill="#1D1D1D"></path>
-                            </g>
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </svg>
+                  <img v-if="selectedColumnType === 'order'" style="cursor: grab" src="static/Drag.svg" alt="Drag Icon" />
               </div>
           </Sortable>
         </div>
@@ -262,16 +245,6 @@ export default {
       this.$_loadFromModel();
     }, { immediate: true });
   },
-  watch: {
-    comperableColumns: {
-      handler() {
-        this.displayModel = this.displayModel.map((col) => {
-          col.item.enableComparison = this.comperableColumns.find((i) => i.value === col.item.key) ? true : false;
-          return col;
-        }); 
-      },
-    },
-  },
   methods: {
     show() {
       this.modal = true;
@@ -311,16 +284,6 @@ export default {
       } catch (err) {
         console.log(err);
       }
-    },
-    $_hideResetPopoever(column) {
-      try {
-        this.$refs[`reset-${column.item.key}`][0].$emit('close');
-      } catch (err) { /* Do Nothing */ }
-    },
-    async $_resetCustomMetric(column) {
-      const metric = { key: column.item.key, name: `${column.item.key.charAt(0).toUpperCase() + column.item.key.slice(1)}`, formula: '', format: 'number', precision: 3 };
-      await this.$_updateCustomMetric(metric);
-      this.$_hideResetPopoever(column);
     },
     async $_updateCustomMetric(metric) {
       await this.updateCustomMetric(metric);
@@ -368,12 +331,6 @@ export default {
     },
     async $_makeComparable(col) {
       await this.switchCompare(col);
-      this.displayModel = this.displayModel.map((item) => {
-        if (item.item.key === col.item.key) {
-          item.item.enableComparison = !item.item.enableComparison;
-        }
-        return item;
-      });
     },
     $_groupLabel(group) {
       return this.nativeFields.find((g) => g.group === group)?.label;
@@ -385,7 +342,7 @@ export default {
     async $_savePreset() {
       await this.savePreset(this.columnPresetName, this.displayModel);
       this.hide();
-    }
+    },
   },
 };
 </script>
@@ -639,26 +596,9 @@ export default {
     margin-bottom: 4px;
   }
 }
-
-.reset-metric-popover {
-  .popover-body {
-    .primary-button {
-      min-width: 12rem;
-
-      &.primary-button--danger {
-        background: #eb5050 !important;
-        border-color: #eb5050 !important;
-      }
-    }
-
-    .secondary-button {
-      &[disabled] {
-        color:#6a737c;
-        background-color: white;
-        border-color: #E5E5E5;
-        cursor: not-allowed;
-      }
-    }
-  }
+.clean-btn {
+  background-color: transparent;
+  padding: 0;
+  border: none;
 }
 </style>

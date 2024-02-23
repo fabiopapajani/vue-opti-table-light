@@ -1295,7 +1295,7 @@ export default function () {
             precision: 3,
             style: "",
           },
-          customMetric: "",
+          customMetric: "publisher_revenue / publisher_clicks",
           display: false,
         },
         {

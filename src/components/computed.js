@@ -77,4 +77,7 @@ export default {
     });
     return table;
   },
+  $c_disableEditButton() {
+    return !this.presetName.length;
+  }
 };
