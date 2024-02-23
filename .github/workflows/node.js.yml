@@ -26,6 +26,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: git config --global user.email "ari@paperclicks.net"
+    - run: git config --global user.name "Ari Bot"
     - run: npm version minor -m "[skip ci] %s"
     - run: npm i 
     - run: npm run build-bundle 
