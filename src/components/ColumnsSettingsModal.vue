@@ -211,8 +211,8 @@ export default {
     $c_presetInitialValue() {
       const preset = this.presets.find((p) => p.uniqueName === this.currentPreset);
       return {
-        value: preset.key,
-        content: preset.uniqueName,
+        value: preset?.key || '',
+        content: preset?.uniqueName || '',
       }
     },
     $c_disablePresetOkButton() {
