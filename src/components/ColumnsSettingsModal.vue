@@ -2,6 +2,7 @@
   <b-modal :modal-class="[{ 'd-none': hideModal }, 'columns-settings-modal']" title-class="ml-auto" ref="columnSettings" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" :size="$c_modalSize" title="Columns settings" ok-title="Apply" body-class="py-0">
     <template #modal-header>
       <vue-opti-select-light
+        v-if="hasPresets"
         class="optimizer-select"
         :options="presetOptions"
         button-placeholder="Select Preset"
@@ -150,6 +151,7 @@ export default {
     currentPreset: { type: String, default: '' },
     switchCompare: { type: Function, default: () => {} },
     savePreset: { type: Function, default: () => {} },
+    hasPresets: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -366,6 +368,12 @@ export default {
   }
   .modal-dialog {
     .modal-header {
+      padding: 10px 12px;
+      background-color: #f5f6f7;
+      align-items: baseline;
+      h4 {
+        font-size: 1rem;
+      }
       .header-btn {
         background-color: transparent;
         border: none;

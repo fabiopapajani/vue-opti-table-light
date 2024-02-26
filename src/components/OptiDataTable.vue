@@ -23,10 +23,12 @@
           </b-form-input>
           <template v-slot:append v-if="enableColumns && saveSettings">
             <b-btn v-show="saveSettingsLoading"><i class="fa fa-spinner fa-spin" aria-hidden="true" title="Saving..."></i></b-btn>
-            <b-dropdown v-show="!saveSettingsLoading" right variant="secondary" ref="presetDropdown">
+            <b-btn v-show="!saveSettingsLoading && !hasPresets" @click="$refs.columnsSettingsModal.show()"><i class="fa fa-columns" aria-hidden="true"></i></b-btn>
+            <b-dropdown v-show="!saveSettingsLoading && hasPresets" right variant="secondary" ref="presetDropdown">
               <template #button-content>
                 <img src="static/Column.svg" alt="Column Icon">
               </template>
+              
               <b-dropdown-form>
                 <h6>Preset List</h6>
                 <label class="radio" v-for="(preset, i) in presets" :key="i">
@@ -358,6 +360,7 @@
       :currentPreset="currentPreset"
       :switchCompare="switchCompare"
       :savePreset="savePreset"
+      :hasPresets="hasPresets"
     />
   </div>
 </template>

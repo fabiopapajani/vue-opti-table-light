@@ -1,3 +1,38 @@
+const nativeFields = [
+  {
+    value: 'tr',
+    group: 'tr',
+    useInCustomMetric: true,
+    priority: 2,
+    label: 'Trackers Fields',
+  },
+  {
+    value: 'ts',
+    group: 'ts',
+    priority: 1,
+    useInCustomMetric: true,
+    label: 'Traffic Sources Fields',
+  },
+  {
+    value: 'cm',
+    priority: 5,
+    group: 'cm',
+    label: 'Custom Metrics Fields',
+  },
+  {
+    value: 'campaign',
+    group: 'campaign',
+    label: 'Campaign Metrics',
+    priority: 12,
+  },
+  {
+    value: 'other',
+    group: 'other',
+    label: 'Other',
+    priority: 11,
+  },
+]
+
 export default {
   name: { type: String, required: true },
   selectable: { type: Boolean, default: false },
@@ -37,11 +72,12 @@ export default {
   hasGroups: { type: Boolean, default: true },
   hasComperisonColumns: { type: Boolean, default: true },
   hasCustomMetrics: { type: Boolean, default: true },
-  nativeFields: { type: Array, default: () => [] },
+  nativeFields: { type: Array, default: () => nativeFields },
   presets: { type: Array, default: () => [] },
   currentPreset: { type: String, default: 'Default' },
   deletePreset: { type: Function, default: () => {} },
   savePreset: { type: Function, default: () => {} },
   editPreset: { type: Function, default: () => {} },
+  hasPresets: { type: Boolean, default: true },
   switchCompare: { type: Function, default: () => {} },
 };
