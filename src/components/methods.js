@@ -175,5 +175,30 @@ export default {
   // Handle Download CSV
   $_downloadCsv() {
     this.$refs['csv-button'].generate();
-  }
+  },
+
+  // Handle Presets
+  $_changePreset({ target: { ariaLabel, checked } }) {
+    if (checked) {
+      this.localHeaderFields = this.presets.find((p) => p.uniqueName === ariaLabel)?.fields || [];
+      this.$refs.presetDropdown.hide(true);
+    }
+  },
+
+  // close popover
+  $_close(ref, index) {
+    this.$refs[ref][index].$emit('close');
+  },
+
+  // Edit Preset
+  async $_editPreset(index) {
+    await this.editPreset(this.presetName);
+    this.$_close('editPopover', index);
+  },
+
+  // Delete Preset
+  async $_deletePreset(index, presetName) {
+    await this.deletePreset(presetName);
+    this.$_close('deletePopover', index);
+  },
 };
