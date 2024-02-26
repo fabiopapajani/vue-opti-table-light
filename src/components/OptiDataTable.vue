@@ -26,7 +26,9 @@
             <b-btn v-show="!saveSettingsLoading && !hasPresets" @click="$refs.columnsSettingsModal.show()"><i class="fa fa-columns" aria-hidden="true"></i></b-btn>
             <b-dropdown v-show="!saveSettingsLoading && hasPresets" right variant="secondary" ref="presetDropdown">
               <template #button-content>
-                <img src="static/Column.svg" alt="Column Icon">
+                <svg width="20" height="20" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="currentColor" d="M9.836 3h-3.67v10h3.67zm1.5 10H13.5a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 3h-2.164zM2.5 3h2.166v10H2.5A1.5 1.5 0 0 1 1 11.5v-7A1.5 1.5 0 0 1 2.5 3"/>
+                </svg>
               </template>
               
               <b-dropdown-form>
@@ -81,7 +83,9 @@
                 </label>
               </b-dropdown-form>
               <b-button class="customize-columns-btn" size="sm" @click="$refs.columnsSettingsModal.show()">
-                <img src="static/ColumnSetting.svg" class="mr-1 mb-1" alt="Column Setting Icon">
+                <svg class="mr-1 mb-1" width="17" height="17" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="currentColor" d="M2.75 3a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5zm0 4.5a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5zm16-2.5A2.75 2.75 0 0 0 16 7.75v15.5A2.75 2.75 0 0 0 18.75 26h3.5A2.75 2.75 0 0 0 25 23.25V7.75A2.75 2.75 0 0 0 22.25 5zM17.5 7.75c0-.69.56-1.25 1.25-1.25h3.5c.69 0 1.25.56 1.25 1.25v3.75h-6zm0 5.25h6v5h-6zm6 6.5v3.75c0 .69-.56 1.25-1.25 1.25h-3.5c-.69 0-1.25-.56-1.25-1.25V19.5zM3.75 12a.75.75 0 0 1 .75.75v3A2.25 2.25 0 0 0 6.75 18h3.69l-2.22-2.22a.75.75 0 1 1 1.06-1.06l3.5 3.5a.75.75 0 0 1 0 1.06l-3.5 3.5a.75.75 0 0 1-1.06-1.06l2.22-2.22H6.75A3.75 3.75 0 0 1 3 15.75v-3a.75.75 0 0 1 .75-.75"/>
+                </svg>
                 Customize Columns
               </b-button>
             </b-dropdown>

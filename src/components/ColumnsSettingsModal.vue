@@ -12,7 +12,9 @@
       />
       <h4>Columns settings</h4>
       <button class="header-btn" @click="hide">
-        <img src="static/Close.svg" alt="Close Icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+          <path fill="currentColor" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6l-5.6 5.6Z"/>
+        </svg>
       </button>
     </template>
     <div class="row">
@@ -83,12 +85,16 @@
               <div class="p-0 sortable-item" v-for="(col, index) in model" v-show="col.display" :key="`item-${index}`">
                   <span>
                     <button class="clean-btn" v-if="selectedColumnType === 'order'" @click="$_removeSelectedColumn(col)">
-                      <img  v-if="selectedColumnType === 'order'" src="static/Close.svg" class="mb-1" alt="Close Icon">
+                      <svg v-if="selectedColumnType === 'order'" xmlns="http://www.w3.org/2000/svg" class="mb-1" width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6l-5.6 5.6Z"/>
+                      </svg>
                     </button>
                     <input :checked="col.item.comparable" :disabled="col.options.format === 'string'" @change="$_makeComparable(col)" type="checkbox" class="mr-1" v-if="selectedColumnType === 'compare'" />
                     {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
                   </span>
-                  <img v-if="selectedColumnType === 'order'" style="cursor: grab" src="static/Drag.svg" alt="Drag Icon" />
+                  <svg v-if="selectedColumnType === 'order'" style="cursor: grab" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 48 48">
+                    <path fill="currentColor" fill-rule="evenodd" d="M19 10a4 4 0 1 1-8 0a4 4 0 0 1 8 0Zm-4 18a4 4 0 1 0 0-8a4 4 0 0 0 0 8Zm0 14a4 4 0 1 0 0-8a4 4 0 0 0 0 8Zm22-32a4 4 0 1 1-8 0a4 4 0 0 1 8 0Zm-4 18a4 4 0 1 0 0-8a4 4 0 0 0 0 8Zm0 14a4 4 0 1 0 0-8a4 4 0 0 0 0 8Z" clip-rule="evenodd"/>
+                  </svg>
               </div>
           </Sortable>
         </div>
@@ -98,10 +104,10 @@
     <custom-metric-modal ref="customMetricModal" @hidden="hideModal = false" :submit="$_updateCustomMetric" :custom-metric-options="customMetricOptions" :metric-group-options="metricGroupOptions" />
     <template #modal-footer>
       <div>
-        <button class="btn btn-secondary mr-3" @click="hide">Cancel</button>
+        <button class="btn btn-secondary mr-2" @click="hide">Cancel</button>
         <span>
-          <button class="btn btn-primary" @click="$_saveSettings">Save</button>
-          <b-dropdown>
+          <button :class="[hasPresets ? 'btn btn-primary' : 'btn btn-primary border']" @click="$_saveSettings">Save</button>
+          <b-dropdown v-if="hasPresets">
             <b-dropdown-item v-b-modal.save-modal>Save as New Preset</b-dropdown-item>
           </b-dropdown>
         </span>
@@ -356,6 +362,9 @@ export default {
       &:first-child {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
+      }
+      &.border {
+        border-radius: 0.25rem;
       }
     }
     .dropdown-toggle.btn-secondary {

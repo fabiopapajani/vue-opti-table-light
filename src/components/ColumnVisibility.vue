@@ -12,7 +12,12 @@
         <label v-for="(item, i) in col.items" :id="`tooltip-${item.item.key}`" role="colitem" class="w-100 m-0 py-1 px-2" :key="i">
             <input type="checkbox" :true-value="true" :false-value="false" v-model="item.display" />
             {{ typeof item.header.content == 'function' ? item.header.content() : item.header.content }}
-            <img src="static/Compare.svg" v-if="item.item.comparable" />
+            <svg v-if="item.item.comparable" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 100 100" fill="none">
+              <rect x="2" y="2" width="96" height="96" rx="18" stroke="#76B4F1" stroke-width="4" />
+              <path d="M18 37.3333L33.5 22M33.5 22L49 37.3333M33.5 22V77.5" stroke="#76B4F1" stroke-width="6.16667"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M51 62.1667L66.5 77.5M66.5 77.5L82 62.1667M66.5 77.5V22" stroke="#76B4F1" stroke-width="6.16667" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
             <i v-if="item.header.info && item.header.infoType === 'tooltip'"
               v-b-tooltip="{ hover: true, html: true, title: item.header.info, boundary: 'window' }"
               class="fa fa-info-circle info-icon"></i>
@@ -48,7 +53,12 @@
         <label :id="`tooltip-${col.item.key}`" role="colitem" class="w-100 m-0 py-1 px-2">
             <input type="checkbox" :true-value="true" :false-value="false" v-model="col.display" />
             {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
-            <img src="static/Compare.svg" v-if="item.item.comparable" />
+            <svg v-if="col.item.comparable" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 100 100" fill="none">
+              <rect x="2" y="2" width="96" height="96" rx="18" stroke="#76B4F1" stroke-width="4" />
+              <path d="M18 37.3333L33.5 22M33.5 22L49 37.3333M33.5 22V77.5" stroke="#76B4F1" stroke-width="6.16667"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M51 62.1667L66.5 77.5M66.5 77.5L82 62.1667M66.5 77.5V22" stroke="#76B4F1" stroke-width="6.16667" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
             <i v-if="col.header.info && col.header.infoType === 'tooltip'"
               v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window' }"
               class="fa fa-info-circle info-icon"></i>
