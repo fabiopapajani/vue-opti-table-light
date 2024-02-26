@@ -23,7 +23,68 @@
           </b-form-input>
           <template v-slot:append v-if="enableColumns && saveSettings">
             <b-btn v-show="saveSettingsLoading"><i class="fa fa-spinner fa-spin" aria-hidden="true" title="Saving..."></i></b-btn>
-            <b-btn v-show="!saveSettingsLoading" @click="$refs.columnsSettingsModal.show()"><i class="fa fa-columns" aria-hidden="true"></i></b-btn>
+            <b-btn v-show="!saveSettingsLoading && !hasPresets" @click="$refs.columnsSettingsModal.show()"><i class="fa fa-columns" aria-hidden="true"></i></b-btn>
+            <b-dropdown v-show="!saveSettingsLoading && hasPresets" right variant="secondary" ref="presetDropdown">
+              <template #button-content>
+                <img src="static/Column.svg" alt="Column Icon">
+              </template>
+              
+              <b-dropdown-form>
+                <h6>Preset List</h6>
+                <label class="radio" v-for="(preset, i) in presets" :key="i">
+                  <input @change="$_changePreset" class="radio-input" type="radio" name="radio" :aria-label="preset.uniqueName" :checked="currentPreset === preset.uniqueName" />
+                  <span :id="`popover-target-${i}`" class="radio-checkmark-box">
+                    <span class="radio-checkmark"></span>
+                  </span>
+                  <div class="label-properties">
+                    <p>{{ preset.uniqueName }}</p>
+                    <span id="edit-action" v-if="!preset.suggested">
+                        <button class="action-btn" :id="`delete-popover-${i}`" @click.prevent>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M7.5 1h9v3H22v2h-2.029l-.5 17H4.529l-.5-17H2V4h5.5V1Zm2 3h5V3h-5v1ZM6.03 6l.441 15h11.058l.441-15H6.03ZM13 8v11h-2V8h2Z"/>
+                        </svg>
+                        </button>
+                        <b-popover ref="deletePopover" custom-class="edit-popover" container="edit-action" :target="`delete-popover-${i}`" triggers="click" placement="top">
+                          <h3>Delete preset</h3>
+                          <p>The custom view of your table columns will be permanently deleted if you continue.</p>
+                          <span>
+                            <button @click.prevent="$_close('deletePopover', i)" class="btn btn-secondary">Cancel</button>
+                            <button @click.prevent="$_deletePreset(i)" class="btn btn-primary">Delete</button>
+                          </span>
+                        </b-popover>
+                        <button class="action-btn" :id="`edit-popover-${i}`" @click.prevent>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M18 2h-2v2h-2v2h-2v2h-2v2H8v2H6v2H4v2H2v6h6v-2h2v-2h2v-2h2v-2h2v-2h2v-2h2V8h2V6h-2V4h-2V2zm0 8h-2v2h-2v2h-2v2h-2v2H8v-2H6v-2h2v-2h2v-2h2V8h2V6h2v2h2v2zM6 16H4v4h4v-2H6v-2z"/>
+                          </svg>
+                        </button>
+                        <b-popover ref="editPopover" custom-class="edit-popover" container="edit-action" :target="`edit-popover-${i}`" triggers="focus" placement="top">
+                          <h3>Edit preset</h3>
+                          <b-form-input v-model="presetName" @click.prevent placeholder="Preset name"></b-form-input>
+                          <span>
+                            <button @click.prevent="$_close('editPopover', i)" class="btn btn-secondary">Cancel</button>
+                            <button :disabled="$c_disableEditButton" @click.prevent="$_editPreset(i)" class="btn btn-primary">Edit</button>
+                          </span>
+                        </b-popover>
+                      </span>
+                  </div>
+                  <b-popover :container="`popover-target-${i}`" ref="popoverRef" :no-fade="true" :target="`popover-target-${i}`" triggers="hover" placement="left" custom-class="popover">
+                    <span>
+                      <h6>{{ preset.uniqueName }}</h6>
+                      <p>Here are the metrics and details included in this column preset:</p>
+                    </span>
+                    <ul>
+                      <li v-for="(field, fI) in preset.fields" :key="fI">
+                        {{ typeof field.header.content === 'function' ? field.header.content() : field.header.content }}
+                      </li>
+                    </ul>
+                  </b-popover>
+                </label>
+              </b-dropdown-form>
+              <b-button class="customize-columns-btn" size="sm" @click="$refs.columnsSettingsModal.show()">
+                <img src="static/ColumnSetting.svg" class="mr-1 mb-1" alt="Column Setting Icon">
+                Customize Columns
+              </b-button>
+            </b-dropdown>
           </template>
         </b-input-group>
       </div>
@@ -62,7 +123,7 @@
                     <slot :name="`HEADER_${col.header.slot}`" :item="col.header" :i="i"></slot>
                   </div>
                   <span v-else-if="typeof col.header.content == 'function'" v-html="col.header.content()"></span>
-                  <span v-else-if="typeof col.header.content != 'function'" v-html="col.header.content"></span>
+                  <span v-else-if="(typeof col.header.content != 'function')" v-html="col.header.content"></span>
                   <i v-if="col.header.info && !showTooltipBeforeText"
                     v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window' }"
                     class="fa fa-info-circle info-icon"></i>
@@ -285,7 +346,22 @@
     <div class="row" v-if="$slots['bottom']">
       <slot name="bottom"></slot>
     </div>
-    <columns-settings-modal ref="columnsSettingsModal" v-model="localHeaderFields" @save="$_saveSettings" :update-custom-metric="updateCustomMetric" :custom-metric-options="customMetricOptions" :metric-group-options="metricGroupOptions" />
+    <columns-settings-modal ref="columnsSettingsModal"    
+      v-model="localHeaderFields" 
+      @save="$_saveSettings"  
+      :update-custom-metric="updateCustomMetric" 
+      :custom-metric-options="customMetricOptions"
+      :metric-group-options="metricGroupOptions" 
+      :has-groups="hasGroups"
+      :has-comperison-columns="hasComperisonColumns"
+      :has-custom-metrics="hasCustomMetrics"
+      :nativeFields="nativeFields"
+      :presets="presets"
+      :currentPreset="currentPreset"
+      :switchCompare="switchCompare"
+      :savePreset="savePreset"
+      :hasPresets="hasPresets"
+    />
   </div>
 </template>
 
@@ -666,6 +742,202 @@ export default {
       }
     }
   }
+
+  // Datatable Search
+  .datatable-search-wrapper {
+    .dropdown-toggle {
+      &::after {
+        content: none;
+      }
+    }
+    .dropdown-menu {
+      width: 300px;
+      padding: .5rem 1rem ;
+
+      .b-dropdown-form {
+        border-bottom: 1px solid #ccd0d5;
+        margin: .4rem 0rem;
+        padding: 0 !important;
+        padding-bottom: .8rem !important;
+        display: flex;
+        flex-direction: column;
+
+        h6 {
+          margin-left: .4rem;
+        }
+
+        .delete-popover {
+          h3 {
+            font-size: 14px;
+            font-weight: 800;
+          }
+          p {
+            font-size: 12px;
+          }
+          span {
+            border-top: 1px solid #dddfe2;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: .3rem 0rem;
+            gap: .4rem;
+
+            button {
+              padding: .2rem .3rem;
+            }
+          }
+        }
+
+        .radio {
+          display: flex;
+          align-items: center;
+          gap: .5rem;
+          padding: 0.2rem .5rem;
+          border-radius: 6px;
+          cursor: pointer;
+
+          .label-properties {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+
+            span {
+              display: flex;
+              align-items: center;
+              gap: .4rem;
+
+              .action-btn {
+                padding-left: 0rem;
+                padding-right: 0rem;
+                background-color: transparent;
+                border: none;
+              }
+
+              .edit-popover {
+                .arrow {
+                  display: none;
+                }
+                h3 {
+                  font-size: 14px;
+                  font-weight: 800;
+                }
+                p {
+                  font-size: 12px;
+                }
+                span {
+                  border-top: 1px solid #dddfe2;
+                  margin-top: 0.5rem;
+                  display: flex;
+                  align-items: center;
+                  justify-content: flex-end;
+                  padding: .3rem 0rem;
+                  gap: .6rem;
+      
+                  button {
+                    padding: .2rem .3rem;
+                  }
+                }
+              }
+            }
+          }
+
+          p {
+            margin: 0 !important;
+          }
+        
+          &.radio:has(input:checked) {
+            background-color: #ecf3ff;
+          }
+          .radio-input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+          
+            &:checked ~ .radio-checkmark-box {
+              border-color: #2987e6;
+              .radio-checkmark {
+                &:after {
+                  display: block;
+                }
+              }
+            }
+          
+            &:checked ~ .radio-checkmark-box {
+              .radio-checkmark {
+                background-color: #2987e6;
+                border: 2px solid #2987e6;
+              }
+            }
+          
+            &:disabled ~ .radio-checkmark-box {
+              .radio-checkmark {
+                border: 2px solid #B0B0B0;
+                cursor: not-allowed;
+              }
+            }
+          
+            &:disabled {
+              &:checked ~ .radio-checkmark-box {
+                .radio-checkmark {
+                  background-color: #B0B0B0;
+                }
+              }
+            }
+          }
+          
+          .radio-checkmark-box {
+            min-width: 25px;
+            max-width: 26px;
+            min-height: 25px;
+            max-height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+            border-radius: 50%;
+          }
+          
+          .radio-checkmark {
+            min-width: 15px;
+            max-width: 15px;
+            min-height: 15px;
+            max-height: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid lightgray;
+            border-radius: 50%;
+            cursor: pointer;
+          
+            &:after {
+              content: "";
+              display: none;
+              width: 24px;
+              height: 20px;
+              background-size: contain;
+            }
+          }
+        }
+      }
+
+      .customize-columns-btn {
+        background-color: transparent;
+        border: none;
+        color: black;
+        width: 100%;
+        text-align: start;
+        padding: .5rem;
+
+        &:hover {
+          background-color: #f1f1f1;
+        }
+      }
+    }
+  }
 }
 
 .large-tooltip .tooltip-inner {
@@ -709,5 +981,14 @@ export default {
     gap: 6px;
     margin-top: 6px;
   }
+}
+.popover {
+  max-height: 350px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
 }
 </style>

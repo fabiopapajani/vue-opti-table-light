@@ -1,90 +1,157 @@
 <template>
-  <b-modal :modal-class="[{ 'd-none': hideModal }, 'columns-settings-modal']" title-class="ml-auto" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" size="lg" title="Columns settings" ok-title="Apply" body-class="py-0">
+  <b-modal :modal-class="[{ 'd-none': hideModal }, 'columns-settings-modal']" title-class="ml-auto" ref="columnSettings" v-model="modal" centered @ok="$_saveSettings" @hidden="$_loadFromModel" :size="$c_modalSize" title="Columns settings" ok-title="Apply" body-class="py-0">
+    <template #modal-header>
+      <vue-opti-select-light
+        v-if="hasPresets"
+        class="optimizer-select"
+        :options="presetOptions"
+        button-placeholder="Select Preset"
+        v-model="selectedPreset"
+        @change="$_changePreset"
+        single
+      />
+      <h4>Columns settings</h4>
+      <button class="header-btn" @click="hide">
+        <img src="static/Close.svg" alt="Close Icon">
+      </button>
+    </template>
     <div class="row">
-      <div class="col-6 py-3 items-col items-col-visibility">
+      <div v-if="hasGroups" class="col-2 items-col items-col-visibility groups">
+          <b-nav v-if="hasGroups" class="groups-container" pills v-b-scrollspy:nav-scroller>
+            <b-nav-item @click="scrollIntoView" v-for="(group, index) in grouping" :href="`#${group.group}`" :key="index">{{ group.label }}</b-nav-item>
+          </b-nav>
+      </div>
+      <div class="col-7 py-3 items-col items-col-visibility">
         <div class="items-col-visibility-header">
-          <h6 class="font-weight-bold">Columns visibility</h6>
+          <span>
+            <h6 class="font-weight-bold">Columns visibility</h6>
+            <button v-if="hasCustomMetrics" @click.prevent="$_editCustomMetric()">Create Custom Metric</button>
+          </span>
           <div class="search-container">
             <input class="col" type="search" placeholder="Search..." v-model="searchModel" />
           </div>
         </div>
-        <b-list-group>
-          <b-list-group-item class="p-0" v-for="(col, index) in displayModel" v-show="$c_searchResultIndex === null || $c_searchResultIndex[index]" :key="index">
-            <label role="colitem" class="w-100 m-0 py-1 px-2">
-              <input type="checkbox" :true-value="true" :false-value="false" v-model="col.display" />
-              {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
-              <i v-if="col.header.info"
-                 v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window' }"
-                 class="fa fa-info-circle info-icon"
-              ></i>
-              <div v-if="typeof col.customMetric !== 'undefined'" class="custom-metrics-actions d-inline-block pull-right">
-                <i class="fa fa-edit mr-2" title="Edit" @click.prevent="$_editCustomMetric(col)"></i>
-                <i class="fa fa-repeat" title="Reset" :id="`reset-${col.item.key}`" @click.prevent></i>
-                <b-popover :ref="`reset-${col.item.key}`" :target="`reset-${col.item.key}`" custom-class="reset-metric-popover" triggers="click" placement="top">
-                  <template #title>Reset {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }} ?</template>
-                  <b-btn :disabled="resetCustomMetricLoading" size="sm" class="mr-2 primary-button primary-button--danger d-inline" @click="$_resetCustomMetric(col)">
-                    <template v-if="resetCustomMetricLoading"> <i class="fa fa-spinner fa-spin"></i></template>
-                    Yes, Reset
-                  </b-btn>
-                  <b-btn :disabled="resetCustomMetricLoading" size="sm" class="secondary-button d-inline" @click="$_hideResetPopoever(col)">No, Keep</b-btn>
-                </b-popover>
-              </div>
-            </label>
+        <b-list-group id="nav-scroller" ref="content">
+          <b-list-group-item
+            v-for="(col, index) in $c_visibilityColumns"
+            class="p-0"
+            v-show="($c_searchResultIndex === null || $c_searchResultIndex[index])" 
+            :key="index"
+            :id="col.group"
+          >
+            <column-visibility 
+              :col="col" 
+              :hasGroups="hasGroups" 
+              :allItemsOfGroupChecked="$_allItemsOfGroupChecked"
+              :selectAllItemsOfGroup="$_selectAllItemsOfGroup"
+              :editCustomMetric="$_editCustomMetric"
+              :parseInfo="$_parseInfo"
+              :resetCustomMetricLoading="resetCustomMetricLoading"
+              :updateCustomMetric="$_updateCustomMetric"
+            />
           </b-list-group-item>
-          <div class="space"></div>
         </b-list-group>
       </div>
-      <div class="col-6 py-3 items-col items-col-order">
+      <div :class="[`col-${hasGroups ? 3 : 5} py-3 items-col items-col-order`]">
         <div class="items-col-order-header">
-          <h6 class="font-weight-bold">Columns order</h6>
+          <h6 class="font-weight-bold">
+            Columns order 
+          </h6>
+          <p>({{ $c_selectedColumns }} COLUMNS SELECTED)</p>
         </div>
-        <b-list-group>
-          <draggable v-model="model" @start="drag = true" @end="drag = false" v-bind="{ animation: 200, group: 'description', disabled: false, ghostClass: 'ghost' }">
-            <transition-group type="transition" :name="!drag ? 'flip-list' : null">
-              <b-list-group-item class="p-0" v-for="(col, index) in model" v-show="col.display" :key="`item-${index}`">
-                <div class="draggable-item-wrapper w-100 m-0 py-1 px-2">
+        <div v-if="hasComperisonColumns">
+          <span class="items-col-order-tabs">
+            <button :class="[`${hasGroups ? '' : 'px-3'}`]" :aria-selected="selectedColumnType === 'order'" @click="() => selectedColumnType = 'order'">
+              Order Columns
+            </button>
+            <button :class="[`${hasGroups ? '' : 'px-3'}`]" :aria-selected="selectedColumnType === 'compare'" @click="() => selectedColumnType = 'compare'">
+              Compare Columns
+            </button>
+          </span>
+          <div class="compare-info">
+            <p>
+              <i class="fa fa-info-circle mt-1" aria-hidden="true"></i>
+              {{ selectedColumnType === 'compare' ? 'Select the columns that you want to be compared.' : 'Drag and drop columns in the order that you prefer.' }}
+            </p>
+          </div>
+        </div>
+        <div>
+        <div :class="[hasComperisonColumns ? 'sortable-container comperison-columns' : 'sortable-container col-max']">
+            <Sortable
+              :disabled="$c_disableSort"
+            >
+              <div class="p-0 sortable-item" v-for="(col, index) in model" v-show="col.display" :key="`item-${index}`">
                   <span>
+                    <button class="clean-btn" v-if="selectedColumnType === 'order'" @click="$_removeSelectedColumn(col)">
+                      <img  v-if="selectedColumnType === 'order'" src="static/Close.svg" class="mb-1" alt="Close Icon">
+                    </button>
+                    <input :checked="col.item.comparable" :disabled="col.options.format === 'string'" @change="$_makeComparable(col)" type="checkbox" class="mr-1" v-if="selectedColumnType === 'compare'" />
                     {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
                   </span>
-                  <svg class="draggable_icon pull-right mt-1" width="10px" height="14px" viewBox="0 0 10 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                      <g id="Outlined" transform="translate(-617.000000, -246.000000)">
-                        <g id="Action" transform="translate(100.000000, 100.000000)">
-                          <g id="Outlined-/-Action-/-drag_indicator" transform="translate(510.000000, 142.000000)">
-                            <g>
-                              <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
-                              <path d="M11,18 C11,19.1 10.1,20 9,20 C7.9,20 7,19.1 7,18 C7,16.9 7.9,16 9,16 C10.1,16 11,16.9 11,18 Z M9,10 C7.9,10 7,10.9 7,12 C7,13.1 7.9,14 9,14 C10.1,14 11,13.1 11,12 C11,10.9 10.1,10 9,10 Z M9,4 C7.9,4 7,4.9 7,6 C7,7.1 7.9,8 9,8 C10.1,8 11,7.1 11,6 C11,4.9 10.1,4 9,4 Z M15,8 C16.1,8 17,7.1 17,6 C17,4.9 16.1,4 15,4 C13.9,4 13,4.9 13,6 C13,7.1 13.9,8 15,8 Z M15,10 C13.9,10 13,10.9 13,12 C13,13.1 13.9,14 15,14 C16.1,14 17,13.1 17,12 C17,10.9 16.1,10 15,10 Z M15,16 C13.9,16 13,16.9 13,18 C13,19.1 13.9,20 15,20 C16.1,20 17,19.1 17,18 C17,16.9 16.1,16 15,16 Z" id="🔹-Icon-Color" fill="#1D1D1D"></path>
-                            </g>
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </svg>
-                </div>
-              </b-list-group-item>
-            </transition-group>
-          </draggable>
-          <div class="space"></div>
-        </b-list-group>
+                  <img v-if="selectedColumnType === 'order'" style="cursor: grab" src="static/Drag.svg" alt="Drag Icon" />
+              </div>
+          </Sortable>
+        </div>
+        </div>
       </div>
     </div>
     <custom-metric-modal ref="customMetricModal" @hidden="hideModal = false" :submit="$_updateCustomMetric" :custom-metric-options="customMetricOptions" :metric-group-options="metricGroupOptions" />
+    <template #modal-footer>
+      <div>
+        <button class="btn btn-secondary mr-3" @click="hide">Cancel</button>
+        <span>
+          <button class="btn btn-primary" @click="$_saveSettings">Save</button>
+          <b-dropdown>
+            <b-dropdown-item v-b-modal.save-modal>Save as New Preset</b-dropdown-item>
+          </b-dropdown>
+        </span>
+      </div>
+      <div>      
+        <b-modal id="save-modal" @cancel="$_hidePreset" :okDisabled="$c_disablePresetOkButton" title="New Column Preset" ref="presetModal" @ok="$_savePreset">
+          <b-form-input
+            type="text"
+            placeholder="Column Preset Name"
+            v-model="columnPresetName"
+            :required="true"
+          ></b-form-input>
+        </b-modal>
+      </div>
+    </template>
   </b-modal>
 </template>
 
 <script>
-import draggable from 'vuedraggable';
 import CustomMetricModal from './CustomMetricModal.vue';
 import _ from 'lodash';
+import Sortable from './Sortable.vue';
+import ColumnVisibility from './ColumnVisibility.vue';
+import { VueOptiSelectLight } from 'vue-opti-select-light';
+
+
 
 export default {
   name: 'ColumnSettingsModal',
-  components: { draggable, CustomMetricModal },
+  components: { 
+    CustomMetricModal,
+    Sortable,
+    ColumnVisibility,
+    VueOptiSelectLight,
+  },
   props: {
     value: { type: Array, default: () => [] },
     updateCustomMetric: { type: Function, default: () => {} },
+    updateComparisonColumn: { type: Function, default: () => {} },
     customMetricOptions: { type: Array, default: () => [] },
     metricGroupOptions: { type: Array, default: () => [] },
+    hasGroups: { type: Boolean, default: false },
+    hasComperisonColumns: { type: Boolean, default: false },
+    hasCustomMetrics: { type: Boolean, default: false },
+    nativeFields: { type: Array, default: () => [] },
+    presets: { type: Array, default: () => [] },
+    currentPreset: { type: String, default: '' },
+    switchCompare: { type: Function, default: () => {} },
+    savePreset: { type: Function, default: () => {} },
+    hasPresets: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -95,6 +162,15 @@ export default {
       searchModel: '',
       hideModal: false,
       resetCustomMetricLoading: false,
+      grouping: [],
+      selectedTab: 0,
+      selectedColumnType: 'order',
+      options: [],
+      comperableColumns: [],
+      collapseComperableColumns: false,
+      presetOptions: [],
+      selectedPreset: {},
+      columnPresetName: '',
     };
   },
   computed: {
@@ -113,16 +189,58 @@ export default {
       this.displayModel.forEach((headerItem) => { map[headerItem.item.key] = headerItem; });
       return map;
     },
+    $c_selectedColumns() {
+      return this.displayModel.filter((col) => col.display).length;
+    },
+    $c_disableSort() {
+      return this.selectedColumnType === 'compare';
+    },
+    $c_modalSize() {
+      return this.hasGroups ? 'xl' : 'lg';
+    },
+    $c_visibilityColumns() {
+      if (this.hasGroups) {
+        const groupedVisibilityColumns = [];
+        this.nativeFields.forEach((group) => {
+          const items = this.displayModel.filter((col) => col.item.group === group.group);
+          groupedVisibilityColumns.push({ label: group.label, group: group.group, items });
+        });
+        return groupedVisibilityColumns;
+      } else {
+        return this.displayModel;
+      }
+    },
+    $c_presetInitialValue() {
+      const preset = this.presets.find((p) => p.uniqueName === this.currentPreset);
+      return {
+        value: preset?.key || '',
+        content: preset?.uniqueName || '',
+      }
+    },
+    $c_disablePresetOkButton() {
+      return !this.columnPresetName;
+    },
   },
   created() {
     this.$watch('displayModel', () => {
       this.drag = true;
       this.model.forEach((headerItem) => {
-        headerItem.display = this.$c_headersMap[headerItem.item.key].display;
+        if (headerItem) {
+          headerItem.display = this.$c_headersMap[headerItem.item.key]?.display;
+        }
       });
       this.$nextTick(() => {
         this.drag = false;
       });
+      this.grouping = this.nativeFields.map((g) => {
+        return {
+          label: g.label,
+          group: g.group,
+        }
+      });
+      this.presetOptions = this.presets.map((preset) => ({ value: preset.key, content: preset.uniqueName }));
+      this.selectedPreset = this.$c_presetInitialValue;
+      this.options = this.displayModel.map((col) => ({ value: col.item.key, content: typeof col.header.content === 'function' ? col.header.content() : col.header.content }));
     }, { deep: true });
 
     this.$watch('value', () => {
@@ -134,7 +252,12 @@ export default {
       this.modal = true;
     },
     hide() {
+      this.columnPresetName = '';
       this.modal = false;
+    },
+    $_hidePreset() {
+      this.columnPresetName = '';
+      this.$refs.presetModal.hide();
     },
     $_saveSettings() {
       this.$emit('save', this.model);
@@ -147,27 +270,22 @@ export default {
     },
     $_editCustomMetric(column) {
       try {
-        const columnItem = { key: column.item.key, formula: column.customMetric || '' };
-        columnItem.name = typeof column.header.content === 'function' ? column.header.content() : column.header.content;
-        if (column.options) {
-          if (column.options.format) columnItem.format = column.options.format;
-          if (!isNaN(column.options.precision)) columnItem.precision = column.options.precision;
+        const customMetricOptions = this.displayModel.filter((col) => col.item.group === 'cm').map((col) => ({ key: col.item.key, name: typeof col.header.content === 'function' ? col.header.content() : col.header.content, formula: col.customMetric, format: col.options.format, precision: col.options.precision }));
+        if (column) {
+          const columnItem = { key: column.item.key, formula: column.customMetric || '' };
+          columnItem.name = typeof column.header.content === 'function' ? column.header.content() : column.header.content;
+          if (column.options) {
+            if (column.options.format) columnItem.format = column.options.format;
+            if (!isNaN(column.options.precision)) columnItem.precision = column.options.precision;
+          }
+          this.$refs.customMetricModal.show(customMetricOptions, columnItem);
+        } else {
+          this.$refs.customMetricModal.show(customMetricOptions);
         }
-        this.$refs.customMetricModal.show(columnItem);
         this.hideModal = true;
       } catch (err) {
         console.log(err);
       }
-    },
-    $_hideResetPopoever(column) {
-      try {
-        this.$refs[`reset-${column.item.key}`][0].$emit('close');
-      } catch (err) { /* Do Nothing */ }
-    },
-    async $_resetCustomMetric(column) {
-      const metric = { key: column.item.key, name: `${column.item.key.charAt(0).toUpperCase() + column.item.key.slice(1)}`, formula: '', format: 'number', precision: 3 };
-      await this.$_updateCustomMetric(metric);
-      this.$_hideResetPopoever(column);
     },
     async $_updateCustomMetric(metric) {
       await this.updateCustomMetric(metric);
@@ -184,28 +302,260 @@ export default {
         this.$emit('input', model);
       }
     },
+    $_removeSelectedColumn(col) {
+      col.display = false;
+    },
+    scrollIntoView(event) {
+      event.preventDefault()
+      const href = event.target.getAttribute('href')
+      const el = href ? document.querySelector(href) : null
+      if (el) {
+        this.$refs.content.scrollTop = el.offsetTop
+      }
+    },
+    $_selectAllItemsOfGroup(checked, group) {
+      const groupItems = this.displayModel.filter((col) => col.item.group === group);
+      groupItems.forEach((col) => { col.display = checked; });
+    },
+    $_allItemsOfGroupChecked(group) {
+      const groupItems = this.displayModel.filter((col) => col.item.group === group);
+      return groupItems.every((col) => col.display);
+    },
+    $_switchCollapse() {
+      this.collapseComperableColumns = !this.collapseComperableColumns;
+    },
+    $_parseInfo(info) {
+      const parsed = JSON.parse(info);
+      return {
+        text: parsed.default.text,
+        formula: parsed.default?.formula,
+      }
+    },
+    async $_makeComparable(col) {
+      await this.switchCompare(col);
+    },
+    $_groupLabel(group) {
+      return this.nativeFields.find((g) => g.group === group)?.label;
+    },
+    $_changePreset() {
+      const { fields } = this.presets.find((p) => p.key === this.selectedPreset.value);
+      this.displayModel = fields;
+    },
+    async $_savePreset() {
+      await this.savePreset(this.columnPresetName, this.displayModel);
+      this.hide();
+    },
   },
 };
 </script>
 
 <style lang="scss">
 .modal.columns-settings-modal {
+  .modal-footer {
+    .btn-primary {
+      &:first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+    .dropdown-toggle.btn-secondary {
+      background-color: #007bff;
+      border-color: #007bff;
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      border-left: 1px solid white !important;
+    }
+  }
   .modal-dialog {
+    .modal-header {
+      padding: 10px 12px;
+      background-color: #f5f6f7;
+      align-items: baseline;
+      h4 {
+        font-size: 1rem;
+      }
+      .header-btn {
+        background-color: transparent;
+        border: none;
+      }
+    }
     .modal-content {
       .modal-body {
+        .col-max {
+          max-height: 550px;
+          overflow-y: auto;
+        }
         .items-col {
           &.items-col-visibility {
             border-right: 1px solid #dee2e6;
+
+            &.groups {
+              padding: 0rem !important;
+
+              .groups-container {
+                .nav-item {
+                  border-bottom: 1px solid #dee2e6;
+                  font-size: 12px;
+                  font-weight: 600;
+                  margin-left: -1px;
+                  width: 100%;
+                  white-space: nowrap;
+                  border-left: 5px solid white;
+              
+                  &.active {
+                    background-color: transparent;
+                    border-left: 5px solid #2987e6;
+                  }
+                  
+                  &:last-child {
+                    border-bottom: none;
+                  }
+              
+                  .nav-link {
+                    color: black;
+                    border-radius: 0 !important;
+                    padding: .8rem .5rem;
+                    &.active {
+                      background-color: transparent;
+                      color: #2987e6;
+                    }
+                  }
+                }
+              }
+            }
+            .items-col-visibility-header {
+              span {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                button {
+                  background-color: transparent;
+                  border: none;
+                  color: #2987e6;
+                  margin-top: -11px;
+                }
+              }
+            }
             .custom-metrics-actions {
               color: #6c757d;
               .fa:hover {
                 color: #212529;
               }
             }
+            .group-label {
+              background-color: #f5f7f8;
+              padding-left: .5rem;
+              margin-top: 1rem;
+              margin-bottom: 1rem;
+              display: flex;
+              align-items: center;
+              gap: .2rem;
+              
+              button {
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: black;
+                font-size: 1rem;
+              }
+
+              p {
+                margin-bottom: 2px;
+                color: #91959c;
+                font-weight: 700;
+              }
+            }
+            .compare-columns {
+              .compare-info {
+                display: flex;
+                opacity: 1;
+                width: 100%;
+                margin-bottom: 1rem;
+                border-left: 4px solid #2987e6;
+                padding: .3rem;
+                align-items: flex-start;
+                gap: .2rem;
+                background-color: #f5f6f8;
+                transition: all 250ms ease-in;
+                p {
+                  font-size: 11px;
+                }
+              }
+            }
           }
           &.items-col-order {
-            .list-group-item {
-              cursor: grab;
+            .items-col-order-header {
+              display: flex;
+              align-items: flex-start;
+              gap: .5rem;
+              white-space: nowrap;
+              font-size: 12px;
+              
+              p {
+                font-size: 11px;
+                margin-top: .1rem;
+              }
+            }
+            .compare-info {
+                display: flex;
+                opacity: 1;
+                width: 100%;
+                margin-bottom: 1rem;
+                border-left: 4px solid #2987e6;
+                padding: .3rem;
+                align-items: flex-start;
+                gap: .2rem;
+                background-color: #f5f6f8;
+                transition: all 250ms ease-in;
+                p {
+                  font-size: 12px;
+                }
+            }
+            .items-col-order-tabs {
+              background-color: #f0f0f0;
+              padding: 0.5rem;
+              border-radius: 6px;
+              display: flex;
+              justify-content: space-evenly;
+              margin-bottom: 1rem;
+            
+              button {
+                background-color: transparent;
+                transition: all 250ms ease-in;
+                border: none;
+                cursor: pointer;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 12px;
+                font-weight: 600;
+            
+                &[aria-selected='true'] {
+                  background-color: white;
+                }
+              }
+            }
+            .sortable-container {
+              max-height: 540px;
+              height: 540px;
+              padding: .7rem;
+              background-color: #e9eaeb;
+              overflow-y: auto;
+
+              .sortable-item {
+                background-color: white;
+                margin: 5px 0;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px !important;
+                border-radius: 3px;
+                white-space: break-spaces;
+              }
+            }
+            .comperison-columns {
+              max-height: 400px;
+              height: 400px;
             }
             .flip-list-move {
               transition: transform 0.5s;
@@ -219,9 +569,9 @@ export default {
             }
           }
           .list-group {
-            max-height: 450px;
+            max-height: 500px;
             overflow-y: auto;
-
+            position: relative;
             .space {
               height: 5px;
               width: 5px;
@@ -245,25 +595,18 @@ export default {
   }
 }
 
-.reset-metric-popover {
-  .popover-body {
-    .primary-button {
-      min-width: 12rem;
-
-      &.primary-button--danger {
-        background: #eb5050 !important;
-        border-color: #eb5050 !important;
-      }
-    }
-
-    .secondary-button {
-      &[disabled] {
-        color:#6a737c;
-        background-color: white;
-        border-color: #E5E5E5;
-        cursor: not-allowed;
-      }
-    }
+.info-popover {
+  left: -310px !important;
+  button {
+    background-color: transparent;
+    border: none;
+    color: #2987e6;
+    margin-bottom: 4px;
   }
+}
+.clean-btn {
+  background-color: transparent;
+  padding: 0;
+  border: none;
 }
 </style>
