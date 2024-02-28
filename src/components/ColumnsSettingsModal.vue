@@ -12,13 +12,15 @@
       />
       <h4>Columns settings</h4>
       <button class="header-btn" @click="hide">
-        <Icon name="close" />
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+          <path fill="currentColor" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6l-5.6 5.6Z"/>
+        </svg>
       </button>
     </template>
     <div class="row">
       <div v-if="hasGroups" class="col-2 items-col items-col-visibility groups">
           <b-nav v-if="hasGroups" class="groups-container" pills v-b-scrollspy:nav-scroller>
-            <b-nav-item @click="$_clearSearch" v-for="(group, index) in grouping" :href="`#${group.group}`" :key="index">{{ group.label }}</b-nav-item>
+            <b-nav-item v-for="(group, index) in grouping" @click="$_scrollIntoView" :to="`#${group.group}`" :key="index">{{ group.label }}</b-nav-item>
           </b-nav>
       </div>
       <div class="col-7 py-3 items-col items-col-visibility">
@@ -82,12 +84,16 @@
               <div class="p-0 sortable-item" v-for="(col, index) in model" v-show="col.display" :key="`item-${index}`">
                   <span>
                     <button class="clean-btn" v-if="selectedColumnType === 'order'" @click="$_removeSelectedColumn(col)">
-                      <Icon name="close" v-if="selectedColumnType === 'order'" />
+                      <svg v-if="selectedColumnType === 'order'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6l-5.6 5.6Z"/>
+                      </svg>
                     </button>
                     <input :checked="col.item.comparable" :disabled="$_disableBasedOnFormat(col)" @change="$_makeComparable(col)" type="checkbox" class="mr-1" v-if="selectedColumnType === 'compare'" />
                     {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
                   </span>
-                  <Icon name="grab" style="cursor: grab" v-if="selectedColumnType === 'order'" />
+                  <svg style="cursor: grab" v-if="selectedColumnType === 'order'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 48 48">
+                    <path fill="currentColor" fill-rule="evenodd" d="M19 10a4 4 0 1 1-8 0a4 4 0 0 1 8 0Zm-4 18a4 4 0 1 0 0-8a4 4 0 0 0 0 8Zm0 14a4 4 0 1 0 0-8a4 4 0 0 0 0 8Zm22-32a4 4 0 1 1-8 0a4 4 0 0 1 8 0Zm-4 18a4 4 0 1 0 0-8a4 4 0 0 0 0 8Zm0 14a4 4 0 1 0 0-8a4 4 0 0 0 0 8Z" clip-rule="evenodd"/>
+                  </svg>
               </div>
           </Sortable>
         </div>
@@ -125,7 +131,6 @@ import _ from 'lodash';
 import Sortable from './Sortable.vue';
 import ColumnVisibility from './ColumnVisibility.vue';
 import { VueOptiSelectLight } from 'vue-opti-select-light';
-import Icon from './Icon.vue';
 
 export default {
   name: 'ColumnSettingsModal',
@@ -134,7 +139,6 @@ export default {
     Sortable,
     ColumnVisibility,
     VueOptiSelectLight,
-    Icon,
   },
   props: {
     value: { type: Array, default: () => [] },
@@ -232,7 +236,7 @@ export default {
     },
     $c_hasGroups() {
         return this.searchModel.length === 0 && this.hasGroups;
-    }
+    },
   },
   created() {
     this.$watch('displayModel', () => {
@@ -275,6 +279,7 @@ export default {
     $_saveSettings() {
       this.$emit('save', this.model);
       this.$emit('input', this.model);
+      this.hide();
     },
     $_loadFromModel() {
       this.displayModel = this.value.map((item) => ({ ...item }));
@@ -318,14 +323,6 @@ export default {
     $_removeSelectedColumn(col) {
       col.display = false;
     },
-    scrollIntoView(event = null) {
-      event?.preventDefault()
-      const href = event?.target.getAttribute('href');
-      const el = href ? document.querySelector(href) : null;
-      if (el) {
-        this.$refs.content.scrollTop = el.offsetTop
-      }
-    },
     $_selectAllItemsOfGroup(checked, group) {
       const groupItems = this.displayModel.filter((col) => col.item.group === group);
       groupItems.forEach((col) => { col.display = checked; });
@@ -352,13 +349,19 @@ export default {
       this.hide();
     },
     $_disableBasedOnFormat(col) {
-      return col.options.format === 'string';
+      return col.options?.format === 'string';
     },
-    $_clearSearch() {
-      this.searchModel = '';
-      setTimeout(() => {
-        this.scrollIntoView();
-      }, 2000)
+    $_scrollIntoView(event) {
+      event.preventDefault();
+      if (this.searchModel.length) {
+        this.searchModel = '';
+      } else {
+        const href = event.target.getAttribute('href')
+        const el = href ? document.querySelector(href) : null
+        if (el) {
+          this.$refs.content.scrollTop = el.offsetTop
+        }
+      }
     },
   },
 };
@@ -618,34 +621,33 @@ export default {
       }
     }
   }
-  .info-popover {
-    box-shadow: 0 .1rem .2rem rgba(136, 136, 136, 0.05);
-    left: -270px !important;
-    min-width: 250px;
-    max-width: 250px;
-    button {
-      background-color: transparent;
-      border: none;
-      color: #2987e6;
-      margin-bottom: 4px;
-    }
-    .popover-header {
-      background-color: transparent;
-      font-weight: 700;
-      border: none;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-  
-      button {
-        font-size: 13px;
-      }
-    }
-  }
 }
 .clean-btn {
   background-color: transparent;
   padding: 0;
   border: none;
+}
+.info-popover {
+  left: -270px !important;
+  max-width: 250px;
+  min-width: 250px;
+  button {
+    background-color: transparent;
+    border: none;
+    color: #2987e6;
+    margin-bottom: 4px;
+  }
+  .popover-header {
+    background-color: transparent;
+    font-weight: 700;
+    border: none;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    button {
+      font-size: 13px;
+    }
+  }
 }
 </style>
