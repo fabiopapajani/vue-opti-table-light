@@ -20,9 +20,7 @@
         scroll: true,
         bubbleScroll: true,
         scrollSensitivity: 20,
-        animation: 150,  
         disabled: this.disabled,
-        easing: "cubic-bezier(1, 0, 0, 1)",
         chosenClass: "sortable-chosen",
         ghostClass: "sortable-ghost",
       });
