@@ -20,7 +20,7 @@
     <div class="row">
       <div v-if="hasGroups" class="col-2 items-col items-col-visibility groups">
           <b-nav v-if="hasGroups" class="groups-container" pills v-b-scrollspy:nav-scroller>
-            <b-nav-item v-for="(group, index) in grouping" @click="$_scrollIntoView" :to="`#${group.group}`" :key="index">{{ group.label }}</b-nav-item>
+            <b-nav-item v-for="(group, index) in grouping" @click="scrollIntoView" :href="`#${group.group}`" :key="index">{{ group.label }}</b-nav-item>
           </b-nav>
       </div>
       <div class="col-7 py-3 items-col items-col-visibility">
@@ -305,6 +305,14 @@ export default {
         console.log(err);
       }
     },
+    scrollIntoView(event) {
+      event.preventDefault()
+      const href = event.target.getAttribute('href')
+      const el = href ? document.querySelector(href) : null
+      if (el) {
+        this.$refs.content.scrollTop = el.offsetTop
+      }
+    },
     async $_updateCustomMetric(metric) {
       await this.updateCustomMetric(metric);
       const headerFieldIndex = this.model.findIndex(({ item: { key } }) => metric.key === key);
@@ -350,14 +358,6 @@ export default {
     },
     $_disableBasedOnFormat(col) {
       return col.options?.format === 'string';
-    },
-    $_scrollIntoView(event) {
-      event.preventDefault();
-      const href = event.target.getAttribute('href')
-      const el = href ? document.querySelector(href) : null
-      if (el) {
-        this.$refs.content.scrollTop = el.offsetTop
-      }
     },
   },
 };
