@@ -12,15 +12,13 @@
       />
       <h4>Columns settings</h4>
       <button class="header-btn" @click="hide">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-          <path fill="currentColor" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6l-5.6 5.6Z"/>
-        </svg>
+        <Icon name="close" />
       </button>
     </template>
     <div class="row">
       <div v-if="hasGroups" class="col-2 items-col items-col-visibility groups">
           <b-nav v-if="hasGroups" class="groups-container" pills v-b-scrollspy:nav-scroller>
-            <b-nav-item @click="scrollIntoView" v-for="(group, index) in grouping" :href="`#${group.group}`" :key="index">{{ group.label }}</b-nav-item>
+            <b-nav-item @click="$_clearSearch" v-for="(group, index) in grouping" :href="`#${group.group}`" :key="index">{{ group.label }}</b-nav-item>
           </b-nav>
       </div>
       <div class="col-7 py-3 items-col items-col-visibility">
@@ -35,21 +33,20 @@
         </div>
         <b-list-group id="nav-scroller" ref="content">
           <b-list-group-item
-            v-for="(col, index) in $c_visibilityColumns"
+            v-for="(col, index) in $c_columns"
             class="p-0"
-            v-show="($c_searchResultIndex === null || $c_searchResultIndex[index])" 
             :key="index"
             :id="col.group"
           >
             <column-visibility 
               :col="col" 
-              :hasGroups="hasGroups" 
+              :hasGroups="$c_hasGroups" 
               :allItemsOfGroupChecked="$_allItemsOfGroupChecked"
               :selectAllItemsOfGroup="$_selectAllItemsOfGroup"
               :editCustomMetric="$_editCustomMetric"
-              :parseInfo="$_parseInfo"
               :resetCustomMetricLoading="resetCustomMetricLoading"
               :updateCustomMetric="$_updateCustomMetric"
+              :infoType="infoType"
             />
           </b-list-group-item>
         </b-list-group>
@@ -85,16 +82,12 @@
               <div class="p-0 sortable-item" v-for="(col, index) in model" v-show="col.display" :key="`item-${index}`">
                   <span>
                     <button class="clean-btn" v-if="selectedColumnType === 'order'" @click="$_removeSelectedColumn(col)">
-                      <svg v-if="selectedColumnType === 'order'" xmlns="http://www.w3.org/2000/svg" class="mb-1" width="20" height="20" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6l-5.6 5.6Z"/>
-                      </svg>
+                      <Icon name="close" v-if="selectedColumnType === 'order'" />
                     </button>
-                    <input :checked="col.item.comparable" :disabled="col.options.format === 'string'" @change="$_makeComparable(col)" type="checkbox" class="mr-1" v-if="selectedColumnType === 'compare'" />
+                    <input :checked="col.item.comparable" :disabled="$_disableBasedOnFormat(col)" @change="$_makeComparable(col)" type="checkbox" class="mr-1" v-if="selectedColumnType === 'compare'" />
                     {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
                   </span>
-                  <svg v-if="selectedColumnType === 'order'" style="cursor: grab" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 48 48">
-                    <path fill="currentColor" fill-rule="evenodd" d="M19 10a4 4 0 1 1-8 0a4 4 0 0 1 8 0Zm-4 18a4 4 0 1 0 0-8a4 4 0 0 0 0 8Zm0 14a4 4 0 1 0 0-8a4 4 0 0 0 0 8Zm22-32a4 4 0 1 1-8 0a4 4 0 0 1 8 0Zm-4 18a4 4 0 1 0 0-8a4 4 0 0 0 0 8Zm0 14a4 4 0 1 0 0-8a4 4 0 0 0 0 8Z" clip-rule="evenodd"/>
-                  </svg>
+                  <Icon name="grab" style="cursor: grab" v-if="selectedColumnType === 'order'" />
               </div>
           </Sortable>
         </div>
@@ -132,8 +125,7 @@ import _ from 'lodash';
 import Sortable from './Sortable.vue';
 import ColumnVisibility from './ColumnVisibility.vue';
 import { VueOptiSelectLight } from 'vue-opti-select-light';
-
-
+import Icon from './Icon.vue';
 
 export default {
   name: 'ColumnSettingsModal',
@@ -142,6 +134,7 @@ export default {
     Sortable,
     ColumnVisibility,
     VueOptiSelectLight,
+    Icon,
   },
   props: {
     value: { type: Array, default: () => [] },
@@ -158,6 +151,7 @@ export default {
     switchCompare: { type: Function, default: () => {} },
     savePreset: { type: Function, default: () => {} },
     hasPresets: { type: Boolean, default: false },
+    infoType: { type: String, default: 'tooltip' },
   },
   data() {
     return {
@@ -180,13 +174,15 @@ export default {
     };
   },
   computed: {
-    $c_searchResultIndex() {
+    $c_searchDisplayModel() {
       if (this.searchModel) {
         const searchValue = this.searchModel.trim().toLowerCase();
-        return this.displayModel.map(({ header: { content } }) => {
-          const value = typeof content === 'function' ? `${content()}` : `${content}`;
-          return value.toLowerCase().includes(searchValue);
-        });
+        return this.displayModel.map((col) => {
+          const value = typeof col.header.content === 'function' ? `${col.header.content()}` : `${col.header.content}`;
+          if (value.toLowerCase().includes(searchValue)) {
+            return col;
+          }
+        }).filter((d) => Boolean(d));
       }
       return null;
     },
@@ -204,6 +200,16 @@ export default {
     $c_modalSize() {
       return this.hasGroups ? 'xl' : 'lg';
     },
+    $c_presetInitialValue() {
+      const preset = this.presets.find((p) => p.uniqueName === this.currentPreset);
+      return {
+        value: preset?.key || '',
+        content: preset?.uniqueName || '',
+      }
+    },
+    $c_disablePresetOkButton() {
+      return !this.columnPresetName;
+    },
     $c_visibilityColumns() {
       if (this.hasGroups) {
         const groupedVisibilityColumns = [];
@@ -216,16 +222,17 @@ export default {
         return this.displayModel;
       }
     },
-    $c_presetInitialValue() {
-      const preset = this.presets.find((p) => p.uniqueName === this.currentPreset);
-      return {
-        value: preset?.key || '',
-        content: preset?.uniqueName || '',
+    $c_columns() {
+      const searchDisplayModel = this.$c_searchDisplayModel;
+      if (searchDisplayModel === null) {
+        return this.$c_visibilityColumns;
+      } else {
+        return searchDisplayModel;
       }
     },
-    $c_disablePresetOkButton() {
-      return !this.columnPresetName;
-    },
+    $c_hasGroups() {
+        return this.searchModel.length === 0 && this.hasGroups;
+    }
   },
   created() {
     this.$watch('displayModel', () => {
@@ -311,10 +318,10 @@ export default {
     $_removeSelectedColumn(col) {
       col.display = false;
     },
-    scrollIntoView(event) {
-      event.preventDefault()
-      const href = event.target.getAttribute('href')
-      const el = href ? document.querySelector(href) : null
+    scrollIntoView(event = null) {
+      event?.preventDefault()
+      const href = event?.target.getAttribute('href');
+      const el = href ? document.querySelector(href) : null;
       if (el) {
         this.$refs.content.scrollTop = el.offsetTop
       }
@@ -330,13 +337,6 @@ export default {
     $_switchCollapse() {
       this.collapseComperableColumns = !this.collapseComperableColumns;
     },
-    $_parseInfo(info) {
-      const parsed = JSON.parse(info);
-      return {
-        text: parsed.default.text,
-        formula: parsed.default?.formula,
-      }
-    },
     async $_makeComparable(col) {
       await this.switchCompare(col);
     },
@@ -350,6 +350,15 @@ export default {
     async $_savePreset() {
       await this.savePreset(this.columnPresetName, this.displayModel);
       this.hide();
+    },
+    $_disableBasedOnFormat(col) {
+      return col.options.format === 'string';
+    },
+    $_clearSearch() {
+      this.searchModel = '';
+      setTimeout(() => {
+        this.scrollIntoView();
+      }, 2000)
     },
   },
 };
@@ -381,7 +390,7 @@ export default {
       background-color: #f5f6f7;
       align-items: baseline;
       h4 {
-        font-size: 1rem;
+        font-size: 16px;
       }
       .header-btn {
         background-color: transparent;
@@ -398,13 +407,19 @@ export default {
           &.items-col-visibility {
             border-right: 1px solid #dee2e6;
 
+            label:hover {
+              background-color: #f5f7f8;
+            }
+
             &.groups {
               padding: 0rem !important;
+              max-height: 600px;
+              overflow: auto;
 
               .groups-container {
                 .nav-item {
                   border-bottom: 1px solid #dee2e6;
-                  font-size: 12px;
+                  font-size: 13px;
                   font-weight: 600;
                   margin-left: -1px;
                   width: 100%;
@@ -503,7 +518,7 @@ export default {
               
               p {
                 font-size: 11px;
-                margin-top: .1rem;
+                margin-top: 2.5px;
               }
             }
             .compare-info {
@@ -548,7 +563,7 @@ export default {
               max-height: 540px;
               height: 540px;
               padding: .7rem;
-              background-color: #e9eaeb;
+              background-color: #f5f7f8;
               overflow-y: auto;
 
               .sortable-item {
@@ -579,6 +594,7 @@ export default {
           }
           .list-group {
             max-height: 500px;
+            min-height: 500px;
             overflow-y: auto;
             position: relative;
             .space {
@@ -602,15 +618,29 @@ export default {
       }
     }
   }
-}
-
-.info-popover {
-  left: -310px !important;
-  button {
-    background-color: transparent;
-    border: none;
-    color: #2987e6;
-    margin-bottom: 4px;
+  .info-popover {
+    box-shadow: 0 .1rem .2rem rgba(136, 136, 136, 0.05);
+    left: -270px !important;
+    min-width: 250px;
+    max-width: 250px;
+    button {
+      background-color: transparent;
+      border: none;
+      color: #2987e6;
+      margin-bottom: 4px;
+    }
+    .popover-header {
+      background-color: transparent;
+      font-weight: 700;
+      border: none;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+  
+      button {
+        font-size: 13px;
+      }
+    }
   }
 }
 .clean-btn {

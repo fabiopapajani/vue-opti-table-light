@@ -365,6 +365,7 @@
       :switchCompare="switchCompare"
       :savePreset="savePreset"
       :hasPresets="hasPresets"
+      :infoType="infoType"
     />
   </div>
 </template>
