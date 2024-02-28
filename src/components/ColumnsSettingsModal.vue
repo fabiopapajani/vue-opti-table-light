@@ -353,14 +353,10 @@ export default {
     },
     $_scrollIntoView(event) {
       event.preventDefault();
-      if (this.searchModel.length) {
-        this.searchModel = '';
-      } else {
-        const href = event.target.getAttribute('href')
-        const el = href ? document.querySelector(href) : null
-        if (el) {
-          this.$refs.content.scrollTop = el.offsetTop
-        }
+      const href = event.target.getAttribute('href')
+      const el = href ? document.querySelector(href) : null
+      if (el) {
+        this.$refs.content.scrollTop = el.offsetTop
       }
     },
   },
