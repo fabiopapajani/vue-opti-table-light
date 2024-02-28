@@ -18,9 +18,8 @@
     mounted() {
       this.sortable = Sortable.create(this.$refs.sortableList, {
         scroll: true,
-        bubbleScroll: true,
-        scrollSensitivity: 20,
         disabled: this.disabled,
+        delay: 10,
         chosenClass: "sortable-chosen",
         ghostClass: "sortable-ghost",
       });
@@ -42,7 +41,7 @@
     background-color: gainsboro;
   }
   .sortable-ghost {
-    border: 2px dotted #2987e6;
+    border: 4px dotted #2987e6;
   }
   </style>
   
