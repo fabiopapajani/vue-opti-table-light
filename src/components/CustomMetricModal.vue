@@ -283,6 +283,7 @@ export default {
     .custom-metric-select {
       display: flex;
       align-items: baseline;
+      margin-bottom: 15px;
     }
 
     .optimizer-form-group {
