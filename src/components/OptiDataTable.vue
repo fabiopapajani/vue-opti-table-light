@@ -120,27 +120,17 @@
                 <div @click="col.header.preventSort ? null : $_fieldClickAction(col)" class="title pt-2 pb-2"
                     :class="{ 'pl-2': !col.item.sortable, 'pr-2': !col.item.filter }" style="text-align: center;">
                   <!-- CHECK IF IS A SLOT -->
-                    <b-button class="table-popover-btn" v-if="col.header.info && showTooltipBeforeText" :id="`tooltip-${col.item.key}`">
-                      <i class="fa fa-info-circle info-icon"></i>
-                    </b-button>
-                    <column-popover
-                      :col="col"
-                      :showEditCustomMetric="false"
-                      placement="rightbottom"
-                    />
+                  <i v-if="col.header.info && showTooltipBeforeText"
+                  v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window' }"
+                  class="fa fa-info-circle info-icon"></i>
                   <div v-if="col.header.slot" :class="[col.header.class, 'HEADER_field']">
                     <slot :name="`HEADER_${col.header.slot}`" :item="col.header" :i="i"></slot>
                   </div>
                   <span v-else-if="typeof col.header.content == 'function'" v-html="col.header.content()"></span>
                   <span v-else-if="(typeof col.header.content != 'function')" v-html="col.header.content"></span>
-                    <b-button class="table-popover-btn" v-if="col.header.info && !showTooltipBeforeText" :id="`tooltip-${col.item.key}`">
-                      <i class="fa fa-info-circle info-icon"></i>
-                    </b-button>
-                    <column-popover
-                      :col="col"
-                      :showEditCustomMetric="false"
-                      placement="rightbottom"
-                    />
+                  <i v-if="col.header.info && !showTooltipBeforeText"
+                  v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window', customClass: col.header.customClass }"
+                  class="fa fa-info-circle info-icon"></i>
                 </div>
                 <!--DROPDOWN FILTERS-->
               </div>
@@ -393,7 +383,6 @@ import DataModel from './DataModel';
 import ColGroupTable from './ColGroupTable';
 import ColumnsSettingsModal from './ColumnsSettingsModal';
 import _ from 'lodash';
-import ColumnPopover from './ColumnPopover.vue';
 
 export default {
   name: 'vue-opti-table-light',
@@ -408,7 +397,6 @@ export default {
     FilterInput,
     ColGroupTable,
     ColumnsSettingsModal,
-    ColumnPopover,
   },
   model: {
     prop: 'tableModel',
