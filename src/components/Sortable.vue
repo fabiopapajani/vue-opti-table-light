@@ -17,11 +17,10 @@
     },
     mounted() {
       this.sortable = Sortable.create(this.$refs.sortableList, {
-        scroll: true,
         disabled: this.disabled,
-        delay: 10,
-        chosenClass: "sortable-chosen",
+        animation: 150,
         ghostClass: "sortable-ghost",
+        forceFallback: true,
       });
     },
     updated() {
@@ -37,11 +36,8 @@
   </script>
   
   <style scoped>
-  .sortable-chosen {
-    background-color: gainsboro;
-  }
   .sortable-ghost {
-    border: 4px dotted #2987e6;
+    border: 3px dotted #2987e6;
   }
   </style>
   

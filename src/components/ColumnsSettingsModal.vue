@@ -44,6 +44,7 @@
               :col="col" 
               :hasGroups="$c_hasGroups" 
               :allItemsOfGroupChecked="$_allItemsOfGroupChecked"
+              :partialItemsOfGroupChecked="$_partialItemsOfGroupChecked"
               :selectAllItemsOfGroup="$_selectAllItemsOfGroup"
               :editCustomMetric="$_editCustomMetric"
               :resetCustomMetricLoading="resetCustomMetricLoading"
@@ -84,7 +85,7 @@
               <div class="p-0 sortable-item" v-for="(col, index) in model" v-show="col.display" :key="`item-${index}`">
                   <span>
                     <button class="clean-btn" v-if="selectedColumnType === 'order'" @click="$_removeSelectedColumn(col)">
-                      <svg v-if="selectedColumnType === 'order'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                      <svg v-if="selectedColumnType === 'order'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
                         <path fill="currentColor" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6l-5.6 5.6Z"/>
                       </svg>
                     </button>
@@ -339,6 +340,14 @@ export default {
       const groupItems = this.displayModel.filter((col) => col.item.group === group);
       return groupItems.every((col) => col.display);
     },
+    $_partialItemsOfGroupChecked(group) {
+      const groupItems = this.displayModel.filter((col) => col.item.group === group);
+      const checkedGroupItems = groupItems.filter((col) => col.display);
+      if (checkedGroupItems.length > 0 && checkedGroupItems.length < groupItems.length) {
+        return true;
+      }
+      return false;
+    },
     $_switchCollapse() {
       this.collapseComperableColumns = !this.collapseComperableColumns;
     },
@@ -473,20 +482,25 @@ export default {
               margin-bottom: 1rem;
               display: flex;
               align-items: center;
-              gap: .2rem;
+              gap: .3rem;
               
               button {
                 background: none;
                 border: none;
                 cursor: pointer;
                 color: black;
-                font-size: 1rem;
+                padding: 0;
+                margin: 0;
+                margin-left: -2px;
+                font-size: 18px;
               }
 
               p {
                 margin-bottom: 2px;
                 color: #91959c;
                 font-weight: 700;
+                font-size: 14px;
+                text-transform: uppercase;
               }
             }
             .compare-columns {
@@ -571,9 +585,10 @@ export default {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                padding: 8px !important;
+                padding: 4px !important;
                 border-radius: 3px;
                 white-space: break-spaces;
+                font-size: 14px;
               }
             }
             .comperison-columns {
@@ -635,6 +650,7 @@ export default {
   }
   .popover-header {
     background-color: transparent;
+    padding-bottom: 0;
     font-weight: 700;
     border: none;
     display: flex;
@@ -644,6 +660,23 @@ export default {
     button {
       font-size: 13px;
     }
+  }
+  .popover-body {
+    p {
+      font-size: 13px;
+    }
+  }
+  .badge {
+    white-space: break-spaces;
+    font-weight: 400;
+    font-size: 15px;
+    text-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    margin-bottom: 10px;
+    gap: 5px;
   }
 }
 </style>

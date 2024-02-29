@@ -4,7 +4,10 @@
       <button v-if="allItemsOfGroupChecked(col.group)" @click="selectAllItemsOfGroup(false, col.group)">
         <i class="fa fa-check-square-o" aria-hidden="true"></i>
       </button>
-      <button v-else @click="selectAllItemsOfGroup(true, col.group)">
+      <button v-if="!allItemsOfGroupChecked(col.group) && !partialItemsOfGroupChecked(col.group)" @click="selectAllItemsOfGroup(true, col.group)">
+        <i class="fa fa-square-o" aria-hidden="true"></i>
+      </button>
+      <button v-if="partialItemsOfGroupChecked(col.group)" @click="selectAllItemsOfGroup(true, col.group)">
         <i class="fa fa-minus-square-o" aria-hidden="true"></i>
       </button>
       <p>{{ col.label }}</p>
@@ -35,6 +38,7 @@
         v-if="infoType === 'popover'"
         :col="item"
         :editCustomMetric="editCustomMetric"
+        customClass="reset-metric-popover info-popover"
       />
     </label>
   </div>
@@ -64,6 +68,7 @@
         v-if="infoType === 'popover'"
         :col="col"
         :editCustomMetric="editCustomMetric"
+        customClass="reset-metric-popover info-popover"
       />
     </label>
   </div>
@@ -78,6 +83,7 @@ export default {
   props: {
     hasGroups: { type: Boolean, default: false },
     allItemsOfGroupChecked: { type: Function, default: () => { } },
+    partialItemsOfGroupChecked: { type: Function, default: () => { } },
     selectAllItemsOfGroup: { type: Function, default: () => { } },
     editCustomMetric: { type: Function, default: () => { } },
     col: { type: Object, default: () => { } },
