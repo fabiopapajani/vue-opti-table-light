@@ -289,7 +289,7 @@ export default {
     },
     $_editCustomMetric(column) {
       try {
-        const customMetricOptions = this.displayModel.filter((col) => col.item.group === 'cm').map((col) => ({ key: col.item.key, name: typeof col.header.content === 'function' ? col.header.content() : col.header.content, formula: col.customMetric, format: col.options.format, precision: col.options.precision }));
+        const customMetricOptions = this.displayModel.filter((col) => col.customMetric !== 'undefined').map((col) => ({ key: col.item.key, name: typeof col.header.content === 'function' ? col.header.content() : col.header.content, formula: col.customMetric, format: col.options.format, precision: col.options.precision }));
         if (column) {
           const columnItem = { key: column.item.key, formula: column.customMetric || '' };
           columnItem.name = typeof column.header.content === 'function' ? column.header.content() : column.header.content;
