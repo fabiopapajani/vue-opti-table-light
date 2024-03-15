@@ -201,4 +201,14 @@ export default {
     await this.deletePreset(presetName);
     this.$_close('deletePopover', index);
   },
+
+  checkIfItemHasDiff(item, key) {
+    const value = item[key];
+    const diff = item[`${key}_diff`];
+    const color = diff > 0 ? 'green' : 'red';
+    if (diff) {
+      return `<span>${value} <a href="" style="color: ${color};">(${diff}%)</a></span>`
+    }
+    return value;
+  }
 };

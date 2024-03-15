@@ -210,7 +210,9 @@
                 <slot :name="col.item.slot" :item="item.$ref" :field="col" :i="i"></slot>
               </div>
               <!-- OTHERWISE RENDER FIELD  -->
-              <div v-else :class="[col.item.class, 'field']" v-html="col.item.content ? col.item.content(item) : item[col.item.key]">
+              <!-- <div v-else :class="[col.item.class, 'field']" v-html="col.item.content ? col.item.content(item) : item[col.item.key]">
+              </div> -->
+              <div v-else :class="[col.item.class, 'field']" v-html="col.item.content ? col.item.content(item) : checkIfItemHasDiff(item, col.item.key)">
               </div>
             </td>
           </template>

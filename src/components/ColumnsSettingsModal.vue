@@ -20,7 +20,7 @@
     <div class="row">
       <div v-if="hasGroups" class="col-2 items-col items-col-visibility groups">
           <b-nav v-if="hasGroups" class="groups-container" pills v-b-scrollspy:nav-scroller>
-            <b-nav-item v-for="(group, index) in grouping" @click="scrollIntoView" :href="`#${group.group}`" :key="index">{{ group.label }}</b-nav-item>
+            <b-nav-item v-for="(group, index) in $c_definedGroups" @click="scrollIntoView" :href="`#${group.group}`" :key="index">{{ group.label }}</b-nav-item>
           </b-nav>
       </div>
       <div class="col-7 py-3 items-col items-col-visibility">
@@ -50,6 +50,7 @@
               :resetCustomMetricLoading="resetCustomMetricLoading"
               :updateCustomMetric="$_updateCustomMetric"
               :infoType="infoType"
+              :isColTemporary="$_isColTemporary"
             />
           </b-list-group-item>
         </b-list-group>
@@ -82,7 +83,7 @@
             <Sortable
               :disabled="$c_disableSort"
             >
-              <div class="p-0 sortable-item" v-for="(col, index) in model" v-show="col.display" :key="`item-${index}`">
+              <div :class="[$_isColTemporary(col) ? 'hide-temp-col' : 'p-0 sortable-item']" v-for="(col, index) in $c_model" v-show="col.display" :key="`item-${index}`">
                   <span>
                     <button class="clean-btn" v-if="selectedColumnType === 'order'" @click="$_removeSelectedColumn(col)">
                       <svg v-if="selectedColumnType === 'order'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
@@ -218,14 +219,37 @@ export default {
     $c_visibilityColumns() {
       if (this.hasGroups) {
         const groupedVisibilityColumns = [];
-        this.nativeFields.forEach((group) => {
-          const items = this.displayModel.filter((col) => col.item.group === group.group);
-          groupedVisibilityColumns.push({ label: group.label, group: group.group, items });
+        const definedGroups = this.$c_definedGroups;
+        definedGroups.forEach((group) => {
+          const items = this.displayModel.filter((col) => col.item?.group === group.group);
+          if (items.length > 0) {
+            groupedVisibilityColumns.push({ label: group.label, group: group.group, items });
+          }
         });
+        const customMetricsGrouped = this.displayModel.filter((col) => {
+          if (!col.item?.group && col.item?.customMetric !== 'undefined') {
+            return col;
+          }
+        })
+        if (customMetricsGrouped.length > 0) {
+          groupedVisibilityColumns.push({ label: 'Custom Metrics', group: 'cm', items: customMetricsGrouped });
+        }
         return groupedVisibilityColumns;
       } else {
         return this.displayModel;
       }
+    },
+    $c_definedGroups() {
+      const labeledGroups = [];
+      const allGroups = Array.from(new Set(this.displayModel.map((i) => i.item?.group))).filter((t) => Boolean(t));
+      for (const group of allGroups) {
+        const findGroup = this.nativeFields.find((g) => g.group === group);
+        if (findGroup) {
+          labeledGroups.push(findGroup);
+        }
+      }
+      labeledGroups.push({ value: 'cm', priority: 5, group: 'cm', label: 'Custom Metrics Fields' });
+      return labeledGroups;
     },
     $c_columns() {
       const searchDisplayModel = this.$c_searchDisplayModel;
@@ -234,6 +258,9 @@ export default {
       } else {
         return searchDisplayModel;
       }
+    },
+    $c_model() {
+      return this.model;
     },
     $c_hasGroups() {
         return this.searchModel.length === 0 && this.hasGroups;
@@ -249,12 +276,6 @@ export default {
       });
       this.$nextTick(() => {
         this.drag = false;
-      });
-      this.grouping = this.nativeFields.map((g) => {
-        return {
-          label: g.label,
-          group: g.group,
-        }
       });
       this.presetOptions = this.presets.map((preset) => ({ value: preset.key, content: preset.uniqueName }));
       this.selectedPreset = this.$c_presetInitialValue;
@@ -368,6 +389,9 @@ export default {
     $_disableBasedOnFormat(col) {
       return col.options?.format === 'string';
     },
+    $_isColTemporary(col) {
+      return col.item?.temporary;
+    }
   },
 };
 </script>
@@ -406,6 +430,9 @@ export default {
       }
     }
     .modal-content {
+      .hide-temp-col {
+        display: none;
+      }
       .modal-body {
         .col-max {
           max-height: 550px;

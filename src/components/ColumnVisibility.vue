@@ -12,7 +12,7 @@
       </button>
       <p>{{ col.label }}</p>
     </div>
-    <label v-for="(item, i) in col.items" :id="`tooltip-${item.item.key}`" role="colitem" class="w-100 m-0 py-1 px-2"
+    <label v-for="(item, i) in col.items" :id="`tooltip-${item.item.key}`" role="colitem" :class="[isColTemporary(item) ? 'hide-temp-col' : 'w-100 m-0 py-1 px-2']"
       :key="i">
       <input type="checkbox" :true-value="true" :false-value="false" v-model="item.display" />
       {{ typeof item.header.content == 'function' ? item.header.content() : item.header.content }}
@@ -42,7 +42,7 @@
       />
     </label>
   </div>
-  <div v-else>
+  <div v-else :class="[isColTemporary(col) ? 'hide-temp-col' : 'w-100 m-0 py-1 px-2']">
     <label :id="`tooltip-${col.item.key}`" role="colitem" class="w-100 m-0 py-1 px-2">
       <input type="checkbox" :true-value="true" :false-value="false" v-model="col.display" />
       {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
@@ -90,6 +90,7 @@ export default {
     resetCustomMetricLoading: { type: Boolean, default: false },
     updateCustomMetric: { type: Function, default: () => { } },
     infoType: { type: String, default: 'tooltip' },
+    isColTemporary: { type: Function, default: () => { } },
   },
   components: {
     CustomMetricPopover,
@@ -123,4 +124,5 @@ export default {
       }
     }
   }
-}</style>
+}
+</style>

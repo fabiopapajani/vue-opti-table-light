@@ -165,6 +165,7 @@ export default function () {
             key: "avg_cpc",
             sortable: true,
             filter: true,
+            temporary: true,
             enabledComparison: false,
             group: "ts",
           },
@@ -846,7 +847,6 @@ export default function () {
             key: "customRevenue8",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Pending Sale Revenue",
@@ -865,7 +865,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "TR CPA",
@@ -886,7 +885,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Impressions",
@@ -907,7 +905,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Conversions",
@@ -927,7 +924,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Revenue",
@@ -947,7 +943,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "TS CPA",
@@ -968,7 +963,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "TS Epc",
@@ -989,7 +983,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "TS CVR",
@@ -1010,7 +1003,6 @@ export default function () {
             key: "customConversions9",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Search",
@@ -1029,7 +1021,6 @@ export default function () {
             key: "customRevenue9",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Search Revenue",
@@ -1048,7 +1039,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Search Feed Revenue",
@@ -1068,7 +1058,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Search Feed Clicks",
@@ -1088,7 +1077,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Search Feed Conversions",
@@ -1114,7 +1102,6 @@ export default function () {
             key: "custom_metric_1",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -1136,7 +1123,6 @@ export default function () {
             key: "custom_metric_2",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -1158,7 +1144,6 @@ export default function () {
             key: "custom_metric_3",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -1180,7 +1165,6 @@ export default function () {
             key: "custom_metric_4",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "currency",
@@ -1202,7 +1186,6 @@ export default function () {
             key: "custom_metric_5",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -1224,7 +1207,6 @@ export default function () {
             key: "custom_metric_6",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -1246,7 +1228,6 @@ export default function () {
             key: "custom_metric_7",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -2353,7 +2334,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Complete Registration",
@@ -2373,7 +2353,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Initiate Checkout",
@@ -2393,7 +2372,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Lead",
@@ -2413,7 +2391,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Purchase",
@@ -2433,7 +2410,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Search",
@@ -2453,7 +2429,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "All custom events",
@@ -2473,7 +2448,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Ad Results",
@@ -2493,7 +2467,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Avg. Link CPC",
@@ -2514,7 +2487,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Landing Page Ctr",
@@ -2535,7 +2507,6 @@ export default function () {
             sortable: true,
             filter: true,
             enabledComparison: false,
-            group: "cm",
           },
           header: {
             content: "Revenue",
@@ -2562,7 +2533,6 @@ export default function () {
             key: "custom_metric_1",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -2584,7 +2554,6 @@ export default function () {
             key: "custom_metric_2",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -2606,7 +2575,6 @@ export default function () {
             key: "custom_metric_3",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "percentage",
@@ -2628,7 +2596,6 @@ export default function () {
             key: "custom_metric_4",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -2650,7 +2617,6 @@ export default function () {
             key: "custom_metric_5",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -2672,7 +2638,6 @@ export default function () {
             key: "custom_metric_6",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "currency",
@@ -2694,7 +2659,6 @@ export default function () {
             key: "custom_metric_7",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -2716,7 +2680,6 @@ export default function () {
             key: "custom_metric_8",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -2738,7 +2701,6 @@ export default function () {
             key: "custom_metric_9",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "number",
@@ -2760,7 +2722,6 @@ export default function () {
             key: "custom_metric_10",
             sortable: true,
             enabledComparison: false,
-            group: "cm",
           },
           options: {
             format: "percentage",
