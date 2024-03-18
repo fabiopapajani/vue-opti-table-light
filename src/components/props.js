@@ -1,3 +1,34 @@
+// eslint-disable-next-line no-unused-vars
+const nativeFields = [
+  {
+    value: 'tr',
+    group: 'tr',
+    useInCustomMetric: true,
+    priority: 2,
+    label: 'Trackers Fields',
+  },
+  {
+    value: 'ts',
+    group: 'ts',
+    priority: 1,
+    useInCustomMetric: true,
+    label: 'Traffic Sources Fields',
+  },
+  {
+    value: 'pf',
+    group: 'pf',
+    priority: 7,
+    useInCustomMetric: true,
+    label: 'Search Feed Fields',
+  },
+  {
+    value: 'campaign', group: 'campaign', label: 'Campaign Metrics', priority: 12,
+  },
+  {
+    value: 'other', group: 'other', label: 'Other', priority: 11,
+  },
+]
+
 export default {
   name: { type: String, required: true },
   selectable: { type: Boolean, default: false },
