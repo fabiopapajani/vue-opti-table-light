@@ -209,10 +209,9 @@
               <div v-if="col.item.slot" :class="[col.item.class, 'field']">
                 <slot :name="col.item.slot" :item="item.$ref" :field="col" :i="i"></slot>
               </div>
+              <div v-else-if="checkIfItemHasDiff(item, col.item.key)" :class="[col.item.class, 'field']" v-html="getDiffValueAndActualValue(item, col.item.key)"></div>
               <!-- OTHERWISE RENDER FIELD  -->
-              <!-- <div v-else :class="[col.item.class, 'field']" v-html="col.item.content ? col.item.content(item) : item[col.item.key]">
-              </div> -->
-              <div v-else :class="[col.item.class, 'field']" v-html="col.item.content ? col.item.content(item) : checkIfItemHasDiff(item, col.item.key)">
+              <div v-else :class="[col.item.class, 'field']" v-html="col.item.content ? col.item.content(item) : item[col.item.key]">
               </div>
             </td>
           </template>
@@ -716,6 +715,12 @@ export default {
     }
     .column-checkbox {
       text-align: center;
+    }
+    .column-header {
+      th.comperable {
+        background-color: #DDEEFF;
+        border: 1.5px solid #80BCFF;
+      }
     }
   }
   // Other

@@ -4,7 +4,7 @@
     <template v-for="(item, i) in headerFields">
       <col
         :key="i" 
-        :class="`col-size-sync col-size-sync-${i} col-size-sync-${item.item.key.replace('.', '-')}`" 
+        :class="[`col-size-sync col-size-sync-${i} col-size-sync-${item.item.key.replace('.', '-')} ${item.colClass}`]" 
         :style="{ ...item.colStyle, ...( resizedColumns[item.item.key] && { width: `${resizedColumns[item.item.key]}px` })}"
       >
     </template>
@@ -21,3 +21,9 @@ export default {
   }
 }
 </script>
+<style>
+.comperable {
+  border-left: 1.5px solid #80BCFF;
+  border-right: 1.5px solid #80BCFF;
+}
+</style>

@@ -202,7 +202,16 @@ export default {
     this.$_close('deletePopover', index);
   },
 
+  
   checkIfItemHasDiff(item, key) {
+    const diff = item[`${key}_diff`];
+    if (diff) {
+      return true;
+    }
+    return false;
+  },
+
+  getDiffValueAndActualValue(item, key) {
     const value = item[key];
     const diff = item[`${key}_diff`];
     const color = diff > 0 ? 'green' : 'red';

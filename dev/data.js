@@ -262,7 +262,7 @@ export default function () {
           options: {
             format: "percentage",
             precision: 2,
-            style: "color",
+            style: "",
           },
           display: true,
         },
@@ -310,6 +310,27 @@ export default function () {
         },
         {
           item: {
+            key: "ts_clicks_comperable",
+            sortable: true,
+            filter: true,
+            enabledComparison: false,
+            group: "ts",
+          },
+          header: {
+            content: "Clicks Previous",
+            info: "The number of clicks as reported by the traffic source.",
+            infoType: "popover",
+          },
+          options: {
+            format: "numeric",
+            precision: 0,
+            style: "",
+          },
+          colClass: 'comperable',
+          display: true,
+        },
+        {
+          item: {
             key: "ts_clicks",
             sortable: true,
             filter: true,
@@ -326,6 +347,7 @@ export default function () {
             precision: 0,
             style: "",
           },
+          colClass: 'comperable',
           display: true,
         },
         {
@@ -345,7 +367,6 @@ export default function () {
           options: {
             format: "numeric",
             precision: 0,
-            style: "",
           },
           display: true,
         },
