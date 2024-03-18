@@ -204,7 +204,7 @@ export default {
 
   
   checkIfItemHasDiff(item, key) {
-    const diff = item[`${key}_diff`];
+    const diff = item[`${key}_diff_percentage`];
     if (diff) {
       return true;
     }
@@ -213,10 +213,14 @@ export default {
 
   getDiffValueAndActualValue(item, key) {
     const value = item[key];
-    const diff = item[`${key}_diff`];
-    const color = diff > 0 ? 'green' : 'red';
-    if (diff) {
-      return `<span>${value} <a href="" style="color: ${color};">(${diff}%)</a></span>`
+    const diffInPercentage = item[`${key}_diff_percentage`];
+    const absoluteDiff = item[`${key}_diff_absolute`];
+    const color = absoluteDiff > 0 ? 'green' : 'red';
+    if (absoluteDiff) {
+      return `<span class="d-flex flex-column">
+        <a>${value}</a>
+        <a style="color: ${color}; font-size: 12px">${absoluteDiff} (${diffInPercentage}%)</a>
+      </span>`
     }
     return value;
   }

@@ -4,7 +4,7 @@
     <template v-for="(item, i) in headerFields">
       <col
         :key="i" 
-        :class="[`col-size-sync col-size-sync-${i} col-size-sync-${item.item.key.replace('.', '-')} ${item.colClass}`]" 
+        :class="[`col-size-sync col-size-sync-${i} col-size-sync-${item.item.key.replace('.', '-')} ${item.colClass ? item.colClass : ''}`]" 
         :style="{ ...item.colStyle, ...( resizedColumns[item.item.key] && { width: `${resizedColumns[item.item.key]}px` })}"
       >
     </template>
