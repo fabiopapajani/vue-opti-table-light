@@ -21,9 +21,3 @@ export default {
   }
 }
 </script>
-<style>
-.comperable {
-  border-left: 1.5px solid #80BCFF;
-  border-right: 1.5px solid #80BCFF;
-}
-</style>

@@ -722,6 +722,10 @@ export default {
         border: 1.5px solid #80BCFF;
       }
     }
+    .comperable {
+      border-left: 1.5px solid #80BCFF;
+      border-right: 1.5px solid #80BCFF;
+    }
   }
   // Other
   .table-message {
