@@ -720,6 +720,7 @@ export default {
       th.comperable {
         background-color: #DDEEFF;
         border: 1.5px solid #80BCFF;
+        border-top: 1.5px solid #80BCFF !important;
       }
     }
     .comperable {
