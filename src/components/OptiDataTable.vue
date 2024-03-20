@@ -640,6 +640,12 @@ export default {
         border-top: none;
         vertical-align: middle;
         overflow: hidden;
+        &.comperable {
+          border-right-color: #80BCFF;
+        }
+        &.adjective {
+          border-right-color: #80BCFF;
+        }
         &:last-child {
           border-right: none;
         }
@@ -704,6 +710,12 @@ export default {
         border-right: 1px solid #e1e6ef;
         border-bottom: none;
         overflow: hidden;
+        &.comperable {
+          border-right-color: #80BCFF;
+        }
+        &.adjective {
+          border-right-color: #80BCFF;
+        }
         &:last-child {
           border-right: none;
         }
@@ -722,10 +734,6 @@ export default {
         border: 1.5px solid #80BCFF;
         border-top: 1.5px solid #80BCFF !important;
       }
-    }
-    .comperable {
-      border-left: 1.5px solid #80BCFF;
-      border-right: 1.5px solid #80BCFF;
     }
   }
   // Other
