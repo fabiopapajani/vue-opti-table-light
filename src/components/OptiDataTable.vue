@@ -641,10 +641,10 @@ export default {
         vertical-align: middle;
         overflow: hidden;
         &.comperable {
-          border-right-color: #80BCFF;
+          border-right-color: #80BCFF !important;
         }
         &.adjective {
-          border-right-color: #80BCFF;
+          border-right-color: #80BCFF !important;
         }
         &:last-child {
           border-right: none;
@@ -711,10 +711,10 @@ export default {
         border-bottom: none;
         overflow: hidden;
         &.comperable {
-          border-right-color: #80BCFF;
+          border-right-color: #80BCFF !important;
         }
         &.adjective {
-          border-right-color: #80BCFF;
+          border-right-color: #80BCFF !important;
         }
         &:last-child {
           border-right: none;
@@ -731,8 +731,10 @@ export default {
     .column-header {
       th.comperable {
         background-color: #DDEEFF;
-        border: 1.5px solid #80BCFF;
-        border-top: 1.5px solid #80BCFF !important;
+        border: 1px solid #80BCFF !important;
+      }
+      th.adjective {
+        border-right: 1px solid #80BCFF !important;
       }
     }
   }
