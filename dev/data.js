@@ -265,6 +265,7 @@ export default function () {
             style: "",
           },
           display: true,
+          colClass: 'adjective',
         },
         {
           item: {
@@ -286,6 +287,7 @@ export default function () {
             style: "",
           },
           display: true,
+          colClass: 'comperable'
         },
         {
           item: {
@@ -307,17 +309,18 @@ export default function () {
             style: "",
           },
           display: true,
+          colClass: 'comperable'
         },
         {
           item: {
-            key: "ts_clicks_comperable",
+            key: "ts_clicks",
             sortable: true,
             filter: true,
             enabledComparison: false,
             group: "ts",
           },
           header: {
-            content: "Clicks Previous",
+            content: "Clicks",
             info: "The number of clicks as reported by the traffic source.",
             infoType: "popover",
           },
@@ -331,14 +334,14 @@ export default function () {
         },
         {
           item: {
-            key: "ts_clicks",
+            key: "ts_clicks_comperable",
             sortable: true,
             filter: true,
             enabledComparison: false,
             group: "ts",
           },
           header: {
-            content: "Clicks",
+            content: "Clicks Previous",
             info: "The number of clicks as reported by the traffic source.",
             infoType: "popover",
           },
