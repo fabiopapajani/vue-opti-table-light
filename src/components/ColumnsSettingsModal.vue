@@ -90,7 +90,7 @@
                         <path fill="currentColor" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6l-5.6 5.6Z"/>
                       </svg>
                     </button>
-                    <input :checked="col.item.comparable" :disabled="$_disableBasedOnFormat(col)" @change="$_makeComparable(col)" type="checkbox" class="mr-1" v-if="selectedColumnType === 'compare'" />
+                    <input :checked="col.item.comparable" :disabled="$_disableBasedOnFormat(col)" @change="(e) => $_makeComparable(e, col)" type="checkbox" class="mr-1" v-if="selectedColumnType === 'compare'" />
                     {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
                   </span>
                   <svg style="cursor: grab" v-if="selectedColumnType === 'order'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 48 48">
@@ -172,11 +172,12 @@ export default {
       selectedTab: 0,
       selectedColumnType: 'order',
       options: [],
-      comperableColumns: [],
-      collapseComperableColumns: false,
+      comparableColumns: [],
+      collapseComparableColumns: false,
       presetOptions: [],
       selectedPreset: {},
       columnPresetName: '',
+      groupedColumns: [],
     };
   },
   computed: {
@@ -230,10 +231,45 @@ export default {
           if (!col.item?.group && col.item?.customMetric !== 'undefined') {
             return col;
           }
+        });
+        const gaFields = this.displayModel.filter((col) => {
+          if (col.item.key.includes('ga:')) {
+            return col;
+          }
+        });
+        const ga4Fields = this.displayModel.filter((col) => {
+          if (col.item.key.includes('ga4')) {
+            return col;
+          }
+        });
+        const otherFields = this.displayModel.filter((col) => {
+          if (!col.group) {
+            return col;
+          }
         })
         if (customMetricsGrouped.length > 0) {
-          groupedVisibilityColumns.push({ label: 'Custom Metrics', group: 'cm', items: customMetricsGrouped });
+          groupedVisibilityColumns.push({ label: 'Custom Metrics', group: 'cm', items: customMetricsGrouped.map((i) => {
+            return { ...i, item: { ...i.item, group: 'cm' } };
+          }) });
         }
+        if (gaFields.length > 0) {
+          groupedVisibilityColumns.push({ label: 'Google Analytics Fields', group: 'ga', items: gaFields.map((i) => {
+            return { ...i, item: { ...i.item, group: 'ga' } };
+          }) });
+        }
+        if (ga4Fields.length > 0) {
+          groupedVisibilityColumns.push({ label: 'Google Analytics 4 Fields', group: 'ga4', items: ga4Fields.map((i) => {
+            return { ...i, item: { ...i.item, group: 'ga4' } };
+          }) });
+        }
+        if (otherFields.length > 0) {
+          groupedVisibilityColumns.push({ label: 'Other Fields', group: 'other', items: otherFields.map((i) => {
+            return { ...i, item: { ...i.item, group: 'other' } };
+          }) });
+        }
+        Object.values(groupedVisibilityColumns).forEach((i) => {
+          this.groupedColumns.push(...i.items);
+        });
         return groupedVisibilityColumns;
       } else {
         return this.displayModel;
@@ -249,6 +285,9 @@ export default {
         }
       }
       labeledGroups.push({ value: 'cm', priority: 5, group: 'cm', label: 'Custom Metrics Fields' });
+      labeledGroups.push({ value: 'ga', priority: 6, group: 'ga', label: 'Google Analytics Fields' });
+      labeledGroups.push({ value: 'ga4', priority: 8, group: 'ga4', label: 'Google Analytics 4 Fields' });
+      labeledGroups.push({ value: 'other', priority: 9, group: 'other', label: 'Other Fields' });
       return labeledGroups;
     },
     $c_columns() {
@@ -354,15 +393,15 @@ export default {
       col.display = false;
     },
     $_selectAllItemsOfGroup(checked, group) {
-      const groupItems = this.displayModel.filter((col) => col.item.group === group);
+      const groupItems = this.groupedColumns.filter((col) => col.item.group === group);
       groupItems.forEach((col) => { col.display = checked; });
     },
     $_allItemsOfGroupChecked(group) {
-      const groupItems = this.displayModel.filter((col) => col.item.group === group);
+      const groupItems = this.groupedColumns.filter((col) => col.item.group === group);
       return groupItems.every((col) => col.display);
     },
     $_partialItemsOfGroupChecked(group) {
-      const groupItems = this.displayModel.filter((col) => col.item.group === group);
+      const groupItems = this.groupedColumns.filter((col) => col.item.group === group);
       const checkedGroupItems = groupItems.filter((col) => col.display);
       if (checkedGroupItems.length > 0 && checkedGroupItems.length < groupItems.length) {
         return true;
@@ -370,10 +409,11 @@ export default {
       return false;
     },
     $_switchCollapse() {
-      this.collapseComperableColumns = !this.collapseComperableColumns;
+      this.collapseComparableColumns = !this.collapseComparableColumns;
     },
-    async $_makeComparable(col) {
-      await this.switchCompare(col);
+    async $_makeComparable(e, col) {
+      const checked = e.target.checked;
+      await this.switchCompare(col, checked);
     },
     $_groupLabel(group) {
       return this.nativeFields.find((g) => g.group === group)?.label;

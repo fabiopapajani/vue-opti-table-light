@@ -209,7 +209,6 @@
               <div v-if="col.item.slot" :class="[col.item.class, 'field']">
                 <slot :name="col.item.slot" :item="item.$ref" :field="col" :i="i"></slot>
               </div>
-              <div v-else-if="checkIfItemHasDiff(item, col.item.key)" :class="[col.item.class, 'field']" v-html="getDiffValueAndActualValue(item, col.item.key)"></div>
               <!-- OTHERWISE RENDER FIELD  -->
               <div v-else :class="[col.item.class, 'field']" v-html="col.item.content ? col.item.content(item) : item[col.item.key]">
               </div>
@@ -640,7 +639,7 @@ export default {
         border-top: none;
         vertical-align: middle;
         overflow: hidden;
-        &.comperable {
+        &.comparable {
           border-right-color: #80BCFF !important;
         }
         &.adjective {
@@ -710,7 +709,7 @@ export default {
         border-right: 1px solid #e1e6ef;
         border-bottom: none;
         overflow: hidden;
-        &.comperable {
+        &.comparable {
           border-right-color: #80BCFF !important;
         }
         &.adjective {
@@ -729,7 +728,7 @@ export default {
       text-align: center;
     }
     .column-header {
-      th.comperable {
+      th.comparable {
         background-color: #DDEEFF;
         border: 1px solid #80BCFF !important;
       }
