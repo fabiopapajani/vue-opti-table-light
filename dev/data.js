@@ -287,7 +287,7 @@ export default function () {
             style: "",
           },
           display: true,
-          colClass: 'comperable'
+          colClass: 'comparable'
         },
         {
           item: {
@@ -309,7 +309,7 @@ export default function () {
             style: "",
           },
           display: true,
-          colClass: 'comperable'
+          colClass: 'comparable'
         },
         {
           item: {
@@ -329,12 +329,12 @@ export default function () {
             precision: 0,
             style: "",
           },
-          colClass: 'comperable',
+          colClass: 'comparable',
           display: true,
         },
         {
           item: {
-            key: "ts_clicks_comperable",
+            key: "ts_clicks_comparable",
             sortable: true,
             filter: true,
             enabledComparison: false,
@@ -350,7 +350,7 @@ export default function () {
             precision: 0,
             style: "",
           },
-          colClass: 'comperable',
+          colClass: 'comparable',
           display: true,
         },
         {
@@ -922,6 +922,174 @@ export default function () {
             style: "",
           },
           display: false,
+        },
+        {
+          "item": {
+              "key": "ga:bounces1",
+              "sortable": true
+          },
+          "header": {
+              "content": "Bounces"
+          },
+          "options": {
+              "format": "numeric",
+              "precision": 3,
+              "style": ""
+          },
+          "display": false
+        },
+        {
+          "item": {
+              "key": "ga:bounces2",
+              "sortable": true
+          },
+          "header": {
+              "content": "Bounces 1"
+          },
+          "options": {
+              "format": "numeric",
+              "precision": 3,
+              "style": ""
+          },
+          "display": false
+        },
+        {
+          "item": {
+              "key": "ga:bounces3",
+              "sortable": true
+          },
+          "header": {
+              "content": "Bounces 2"
+          },
+          "options": {
+              "format": "numeric",
+              "precision": 3,
+              "style": ""
+          },
+          "display": false
+        },
+        {
+          "item": {
+              "key": "ga:bounces4",
+              "sortable": true
+          },
+          "header": {
+              "content": "Bounces 3"
+          },
+          "options": {
+              "format": "numeric",
+              "precision": 3,
+              "style": ""
+          },
+          "display": false
+        },
+        {
+          "item": {
+              "key": "ga4:goal2Completions1",
+              "sortable": true
+          },
+          "header": {
+              "content": "Lancement Player"
+          },
+          "options": {
+              "format": "string",
+              "precision": 3,
+              "style": ""
+          },
+          "display": false
+        },
+        {
+          "item": {
+              "key": "ga4:goal2Completions2",
+              "sortable": true
+          },
+          "header": {
+              "content": "Lancement Player 2"
+          },
+          "options": {
+              "format": "string",
+              "precision": 3,
+              "style": ""
+          },
+          "display": false
+        },
+        {
+          "item": {
+              "key": "ga4:goal2Completions3",
+              "sortable": true
+          },
+          "header": {
+              "content": "Lancement Player 3"
+          },
+          "options": {
+              "format": "string",
+              "precision": 3,
+              "style": ""
+          },
+          "display": false
+        },
+        {
+          "item": {
+              "key": "ga4:goal2Completions4",
+              "sortable": true
+          },
+          "header": {
+              "content": "Lancement Player 4"
+          },
+          "options": {
+              "format": "string",
+              "precision": 3,
+              "style": ""
+          },
+          "display": false
+        },
+        {
+          "item": {
+              "key": "prebid_revenue",
+              "sortable": true
+          },
+          "header": {
+              "content": "PB Revenue",
+              "info": "Prebid Revenue"
+          },
+          "options": {
+              "format": "currency",
+              "precision": 3,
+              "style": ""
+          },
+          "display": true
+        },
+        {
+          "item": {
+              "key": "prebid_revenue2",
+              "sortable": true
+          },
+          "header": {
+              "content": "PB Revenue 2",
+              "info": "Prebid Revenue"
+          },
+          "options": {
+              "format": "currency",
+              "precision": 3,
+              "style": ""
+          },
+          "display": true
+        },
+        {
+          "item": {
+              "key": "prebid_revenue3",
+              "sortable": true
+          },
+          "header": {
+              "content": "PB Revenue3",
+              "info": "Prebid Revenue"
+          },
+          "options": {
+              "format": "currency",
+              "precision": 3,
+              "style": ""
+          },
+          "display": true
         },
         {
           item: {

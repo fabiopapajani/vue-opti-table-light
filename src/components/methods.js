@@ -201,27 +201,4 @@ export default {
     await this.deletePreset(presetName);
     this.$_close('deletePopover', index);
   },
-
-  
-  checkIfItemHasDiff(item, key) {
-    const diff = item[`${key}_diff_percentage`];
-    if (typeof diff === 'number') {
-      return true;
-    }
-    return false;
-  },
-
-  getDiffValueAndActualValue(item, key) {
-    const value = item[key];
-    const diffInPercentage = item[`${key}_diff_percentage`];
-    const absoluteDiff = item[`${key}_diff_absolute`];
-    const color = absoluteDiff >= 0 ? 'green' : 'red';
-    if (typeof absoluteDiff === 'number') {
-      return `<span class="d-flex flex-column">
-        <a style="font-size: 12px; line-height: 12px;">${value}</a>
-        <a style="color: ${color}; font-size: 10px; line-height: 12px;">${absoluteDiff} (${diffInPercentage}%)</a>
-      </span>`
-    }
-    return value;
-  },
 };
