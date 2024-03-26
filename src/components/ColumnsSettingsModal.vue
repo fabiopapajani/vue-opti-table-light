@@ -20,14 +20,14 @@
     <div class="row">
       <div v-if="hasGroups" class="col-2 items-col items-col-visibility groups">
           <b-nav v-if="hasGroups" class="groups-container" pills v-b-scrollspy:nav-scroller>
-            <b-nav-item v-for="(group, index) in $c_definedGroups" @click="scrollIntoView" :href="`#${group.group}`" :key="index">{{ group.label }}</b-nav-item>
+            <b-nav-item v-for="(group, index) in $c_nativeFields" @click="scrollIntoView" :href="`#${group.group}`" :key="index">{{ group.label }}</b-nav-item>
           </b-nav>
       </div>
       <div class="col-7 py-3 items-col items-col-visibility">
         <div class="items-col-visibility-header">
           <span>
             <h6 class="font-weight-bold">Columns visibility</h6>
-            <button v-if="hasCustomMetrics" @click.prevent="$_editCustomMetric()">Create Custom Metric</button>
+            <!-- <button v-if="hasCustomMetrics" @click.prevent="$_editCustomMetric()">Create Custom Metric</button> -->
           </span>
           <div class="search-container">
             <input class="col" type="search" placeholder="Search..." v-model="searchModel" />
@@ -217,56 +217,19 @@ export default {
     $c_disablePresetOkButton() {
       return !this.columnPresetName;
     },
+    $c_nativeFields() {
+      return this.nativeFields.filter((b) => b.display);
+    },
     $c_visibilityColumns() {
       if (this.hasGroups) {
         const groupedVisibilityColumns = [];
-        const definedGroups = this.$c_definedGroups;
+        const definedGroups = this.$c_nativeFields;
         definedGroups.forEach((group) => {
           const items = this.displayModel.filter((col) => col.item?.group === group.group);
           if (items.length > 0) {
             groupedVisibilityColumns.push({ label: group.label, group: group.group, items });
           }
         });
-        const customMetricsGrouped = this.displayModel.filter((col) => {
-          if (!col.item?.group && col.item?.customMetric !== 'undefined') {
-            return col;
-          }
-        });
-        const gaFields = this.displayModel.filter((col) => {
-          if (col.item.key.includes('ga:')) {
-            return col;
-          }
-        });
-        const ga4Fields = this.displayModel.filter((col) => {
-          if (col.item.key.includes('ga4')) {
-            return col;
-          }
-        });
-        const otherFields = this.displayModel.filter((col) => {
-          if (!col.group) {
-            return col;
-          }
-        })
-        if (customMetricsGrouped.length > 0) {
-          groupedVisibilityColumns.push({ label: 'Custom Metrics', group: 'cm', items: customMetricsGrouped.map((i) => {
-            return { ...i, item: { ...i.item, group: 'cm' } };
-          }) });
-        }
-        if (gaFields.length > 0) {
-          groupedVisibilityColumns.push({ label: 'Google Analytics Fields', group: 'ga', items: gaFields.map((i) => {
-            return { ...i, item: { ...i.item, group: 'ga' } };
-          }) });
-        }
-        if (ga4Fields.length > 0) {
-          groupedVisibilityColumns.push({ label: 'Google Analytics 4 Fields', group: 'ga4', items: ga4Fields.map((i) => {
-            return { ...i, item: { ...i.item, group: 'ga4' } };
-          }) });
-        }
-        if (otherFields.length > 0) {
-          groupedVisibilityColumns.push({ label: 'Other Fields', group: 'other', items: otherFields.map((i) => {
-            return { ...i, item: { ...i.item, group: 'other' } };
-          }) });
-        }
         Object.values(groupedVisibilityColumns).forEach((i) => {
           this.groupedColumns.push(...i.items);
         });
@@ -274,21 +237,6 @@ export default {
       } else {
         return this.displayModel;
       }
-    },
-    $c_definedGroups() {
-      const labeledGroups = [];
-      const allGroups = Array.from(new Set(this.displayModel.map((i) => i.item?.group))).filter((t) => Boolean(t));
-      for (const group of allGroups) {
-        const findGroup = this.nativeFields.find((g) => g.group === group);
-        if (findGroup) {
-          labeledGroups.push(findGroup);
-        }
-      }
-      labeledGroups.push({ value: 'cm', priority: 5, group: 'cm', label: 'Custom Metrics Fields' });
-      labeledGroups.push({ value: 'ga', priority: 6, group: 'ga', label: 'Google Analytics Fields' });
-      labeledGroups.push({ value: 'ga4', priority: 8, group: 'ga4', label: 'Google Analytics 4 Fields' });
-      labeledGroups.push({ value: 'other', priority: 9, group: 'other', label: 'Other Fields' });
-      return labeledGroups;
     },
     $c_columns() {
       const searchDisplayModel = this.$c_searchDisplayModel;
@@ -349,18 +297,13 @@ export default {
     },
     $_editCustomMetric(column) {
       try {
-        const customMetricOptions = this.displayModel.filter((col) => col.customMetric !== 'undefined').map((col) => ({ key: col.item.key, name: typeof col.header.content === 'function' ? col.header.content() : col.header.content, formula: col.customMetric, format: col.options.format, precision: col.options.precision }));
-        if (column) {
-          const columnItem = { key: column.item.key, formula: column.customMetric || '' };
-          columnItem.name = typeof column.header.content === 'function' ? column.header.content() : column.header.content;
-          if (column.options) {
-            if (column.options.format) columnItem.format = column.options.format;
-            if (!isNaN(column.options.precision)) columnItem.precision = column.options.precision;
-          }
-          this.$refs.customMetricModal.show(customMetricOptions, columnItem);
-        } else {
-          this.$refs.customMetricModal.show(customMetricOptions);
+        const columnItem = { key: column.item.key, formula: column.customMetric || '' };
+        columnItem.name = typeof column.header.content === 'function' ? column.header.content() : column.header.content;
+        if (column.options) {
+          if (column.options.format) columnItem.format = column.options.format;
+          if (!isNaN(column.options.precision)) columnItem.precision = column.options.precision;
         }
+        this.$refs.customMetricModal.show(columnItem);
         this.hideModal = true;
       } catch (err) {
         console.log(err);
