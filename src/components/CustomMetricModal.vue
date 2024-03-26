@@ -34,7 +34,7 @@
       <b-alert variant="danger" dismissible :show="!!customErrorMessage" @dismissed="customErrorMessage = ''" class="mt-2">{{ customErrorMessage }}</b-alert>
 
       <!-- Name -->
-      <div class="custom-metric-select">
+      <!-- <div class="custom-metric-select">
         <label for="custom-metric-name" class="col-form-label">Select Custom Metric:</label>
         <vue-opti-select-light
           id="custom-metric-format"
@@ -48,7 +48,21 @@
           v-model="form"
           single
         />
-      </div>
+      </div> -->
+      <b-form-group
+        label="Column Name"
+        class="optimizer-form-group"
+        invalid-feedback="Column Name is required"
+        :state="$c_nameState"
+      >
+        <b-form-input
+          id="custom-metric-name"
+          class="optimizer-form-input mb-2"
+          v-model="form.name"
+          trim
+        >
+        </b-form-input>
+      </b-form-group>
 
       <b-row>
         <div class="col-md-6">
