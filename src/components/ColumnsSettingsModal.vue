@@ -62,7 +62,7 @@
           </h6>
           <p>({{ $c_selectedColumns }} COLUMNS SELECTED)</p>
         </div>
-        <div v-if="hasComperisonColumns">
+        <div v-if="hasComparisonColumns">
           <span class="items-col-order-tabs">
             <button :class="[`${hasGroups ? '' : 'px-3'}`]" :aria-selected="selectedColumnType === 'order'" @click="() => selectedColumnType = 'order'">
               Order Columns
@@ -79,7 +79,7 @@
           </div>
         </div>
         <div>
-        <div :class="[hasComperisonColumns ? 'sortable-container comperison-columns' : 'sortable-container col-max']">
+        <div :class="[hasComparisonColumns ? 'sortable-container comparison-columns' : 'sortable-container col-max']">
             <Sortable
               :disabled="$c_disableSort"
             >
@@ -145,16 +145,15 @@ export default {
   props: {
     value: { type: Array, default: () => [] },
     updateCustomMetric: { type: Function, default: () => {} },
-    updateComparisonColumn: { type: Function, default: () => {} },
+    updateComparisonColumns: { type: Function, default: () => {} },
     customMetricOptions: { type: Array, default: () => [] },
     metricGroupOptions: { type: Array, default: () => [] },
     hasGroups: { type: Boolean, default: false },
-    hasComperisonColumns: { type: Boolean, default: false },
+    hasComparisonColumns: { type: Boolean, default: false },
     hasCustomMetrics: { type: Boolean, default: false },
     nativeFields: { type: Array, default: () => [] },
     presets: { type: Array, default: () => [] },
     currentPreset: { type: String, default: '' },
-    switchCompare: { type: Function, default: () => {} },
     savePreset: { type: Function, default: () => {} },
     hasPresets: { type: Boolean, default: false },
     infoType: { type: String, default: 'tooltip' },
@@ -354,9 +353,9 @@ export default {
     $_switchCollapse() {
       this.collapseComparableColumns = !this.collapseComparableColumns;
     },
-    async $_makeComparable(e, col) {
+    $_makeComparable(e, col) {
       const checked = e.target.checked;
-      await this.switchCompare(col, checked);
+      this.updateComparisonColumns(col, checked);
     },
     $_groupLabel(group) {
       return this.nativeFields.find((g) => g.group === group)?.label;
@@ -370,6 +369,7 @@ export default {
       this.hide();
     },
     $_disableBasedOnFormat(col) {
+      // return col.item?.type !== 'entity';
       return col.options?.format === 'string';
     },
     $_isColTemporary(col) {
@@ -601,7 +601,7 @@ export default {
                 font-size: 14px;
               }
             }
-            .comperison-columns {
+            .comparison-columns {
               max-height: 400px;
               height: 400px;
             }
