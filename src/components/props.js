@@ -1,34 +1,3 @@
-// eslint-disable-next-line no-unused-vars
-// const nativeFields = [
-//   {
-//     value: 'tr',
-//     group: 'tr',
-//     useInCustomMetric: true,
-//     priority: 2,
-//     label: 'Trackers Fields',
-//   },
-//   {
-//     value: 'ts',
-//     group: 'ts',
-//     priority: 1,
-//     useInCustomMetric: true,
-//     label: 'Traffic Sources Fields',
-//   },
-//   {
-//     value: 'pf',
-//     group: 'pf',
-//     priority: 7,
-//     useInCustomMetric: true,
-//     label: 'Search Feed Fields',
-//   },
-//   {
-//     value: 'campaign', group: 'campaign', label: 'Campaign Metrics', priority: 12,
-//   },
-//   {
-//     value: 'other', group: 'other', label: 'Other', priority: 11,
-//   },
-// ]
-
 export default {
   name: { type: String, required: true },
   selectable: { type: Boolean, default: false },
@@ -66,7 +35,7 @@ export default {
   metricGroupOptions: { type: Array, default: () => [] },
   showTooltipBeforeText:{type: Boolean, default: false },
   hasGroups: { type: Boolean, default: false },
-  hasComperisonColumns: { type: Boolean, default: false },
+  hasComparisonColumns: { type: Boolean, default: false },
   hasCustomMetrics: { type: Boolean, default: true },
   hasPresets: { type: Boolean, default: false },
   nativeFields: { type: Array, default: () => [] },
@@ -75,6 +44,5 @@ export default {
   deletePreset: { type: Function, default: () => {} },
   savePreset: { type: Function, default: () => {} },
   editPreset: { type: Function, default: () => {} },
-  switchCompare: { type: Function, default: () => {} },
   infoType: { type: String, default: 'tooltip' },
 };
