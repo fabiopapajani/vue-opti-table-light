@@ -82,6 +82,8 @@
         <div :class="[hasComparisonColumns ? 'sortable-container comparison-columns' : 'sortable-container col-max']">
             <Sortable
               :disabled="$c_disableSort"
+              :model="$c_model"
+              ref="sortableList"
             >
               <div :class="[$_isColTemporary(col) ? 'hide-temp-col' : 'p-0 sortable-item']" v-for="(col, index) in $c_model" v-show="col.display" :key="`item-${index}`">
                   <span>
