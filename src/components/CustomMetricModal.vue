@@ -200,12 +200,9 @@ export default {
     this.$options.operatorOptions = ['+', '-', 'x', '/', '(', ')'];
   },
   methods: {
-    show(options, columnItem) {
+    show(columnItem) {
       this.reset();
-      if (columnItem) {
-        Object.assign(this.form, columnItem);
-      }
-      this.availableMetrics = options;
+      Object.assign(this.form, columnItem);
       this.$refs['custom-metric-modal'].show();
     },
     assignMetric(col) {
