@@ -102,6 +102,7 @@ export default {
             },
             display: item.display
           };
+          if (item?.options) field.options = item.options;
           if ('comparable' in item.item) field.item.comparable = item.item.comparable;
           if (item.header.info) field.header.info = item.header.info;
           if (typeof item.customMetric !== 'undefined') field.customMetric = item.customMetric;
