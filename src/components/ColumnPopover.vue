@@ -6,7 +6,7 @@
           <button class="d-inline-block pull-right" v-if="showEditCustomMetric && (typeof col.customMetric !== 'undefined')"
             @click.prevent="editCustomMetric(col)">Edit</button></template>
         <p v-if="!$_isJSON(col.header)">{{ col.header.info }} <span style="color: #2e4887">{{
-            col.item.comparable ?
+            col.comparable ?
             '(The metric is selected to be a comparison column)' : '' }}</span></p>
         <div v-else>
          <span v-if="$_parseInfo(col.header.info).isCustomMetric">

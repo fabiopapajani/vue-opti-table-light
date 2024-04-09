@@ -639,10 +639,6 @@ export default {
         border-top: none;
         vertical-align: middle;
         overflow: hidden;
-        &.comparable {
-          border: 2.4px solid #80BCFF !important;
-          border-bottom-color: transparent !important;
-        }
         &:last-child {
           border-right: none;
         }
@@ -708,8 +704,7 @@ export default {
         border-bottom: none;
         overflow: hidden;
         &.comparable {
-          border-left: 2.4px solid #80BCFF !important;
-          border-right: 2.4px solid #80BCFF !important;
+          background-color: lightyellow;
         }
         &:last-child {
           border-right: none;
@@ -726,8 +721,6 @@ export default {
     .column-header {
       th.comparable {
         background-color: #DDEEFF;
-        border: 2.4px solid #80BCFF !important;
-        border-bottom-color: transparent !important;
       }
     }
   }
