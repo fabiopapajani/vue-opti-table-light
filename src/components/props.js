@@ -45,4 +45,5 @@ export default {
   savePreset: { type: Function, default: () => {} },
   editPreset: { type: Function, default: () => {} },
   infoType: { type: String, default: 'tooltip' },
+  focusSelectedRows:{type: Boolean, default: false },
 };
