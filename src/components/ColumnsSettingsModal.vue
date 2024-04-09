@@ -92,7 +92,7 @@
                         <path fill="currentColor" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6l-5.6 5.6Z"/>
                       </svg>
                     </button>
-                    <input :checked="col.item.comparable" :disabled="$_disableBasedOnFormat(col)" @change="(e) => $_makeComparable(e, col)" type="checkbox" class="mr-1" v-if="selectedColumnType === 'compare'" />
+                    <input :checked="col.comparable" :disabled="$_disableBasedOnFormat(col)" @change="(e) => $_makeComparable(e, col)" type="checkbox" class="mr-1" v-if="selectedColumnType === 'compare'" />
                     {{ typeof col.header.content == 'function' ? col.header.content() : col.header.content }}
                   </span>
                   <svg style="cursor: grab" v-if="selectedColumnType === 'order'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 48 48">
