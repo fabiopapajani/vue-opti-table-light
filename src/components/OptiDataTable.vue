@@ -53,19 +53,14 @@
                       class="arrow-down"></div>
                 </div>
                 <div @click="col.header.preventSort ? null : $_fieldClickAction(col)" class="title pt-2 pb-2"
-                    :class="{ 'pl-2': !col.item.sortable, 'pr-2': !col.item.filter }" style="text-align: center;">
+                    :class="{ 'pl-2': !col.item.sortable, 'pr-2': !col.item.filter }" style="text-align: center;"
+                    v-b-tooltip.hover.html="col.header.info" :title="col.header.info ? '' : null">
                   <!-- CHECK IF IS A SLOT -->
-                  <i v-if="col.header.info && showTooltipBeforeText"
-                    v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window' }"
-                    class="fa fa-info-circle info-icon"></i>
                   <div v-if="col.header.slot" :class="[col.header.class, 'HEADER_field']">
                     <slot :name="`HEADER_${col.header.slot}`" :item="col.header" :i="i"></slot>
                   </div>
                   <span v-else-if="typeof col.header.content == 'function'" v-html="col.header.content()"></span>
                   <span v-else-if="typeof col.header.content != 'function'" v-html="col.header.content"></span>
-                  <i v-if="col.header.info && !showTooltipBeforeText"
-                    v-b-tooltip="{ hover: true, html: true, title: col.header.info, boundary: 'window', customClass: col.header.customClass }"
-                    class="fa fa-info-circle info-icon"></i>
                 </div>
                 <!--DROPDOWN FILTERS-->
               </div>
